@@ -1,10 +1,12 @@
-from flask import Flask, request, redirect, render_template, session, flash
+from flask import Flask, request, redirect, render_template, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from werkzeug.exceptions import Unauthorized
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, Book, Club, Membership, Read, Note
 from forms import LoginForm, RegisterForm, NotesForm, DeleteForm
+
+CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///booktalk' 
@@ -18,24 +20,34 @@ connect_db(app)
 
 toolbar = DebugToolbarExtension(app)
 
-### Routes ###
 
-@app.route("/")
-def show_home():
-    """Shows home page"""
+########################################################################
+# User register/login/logout
 
-    # If no user is signed in, redirect to log-in page
-    if 'username' not in session:
-        
-        return redirect("/login")
 
-    return render_template("home.html")
+@app.before_request
+def load_user():
+    """If logged in, load curr user."""
+    if CURR_USER_KEY in session:
+        g.user = db.session.get(session[CURR_USER_KEY])
 
-##### Login / registration page #####
+    else:
+        g.user = None
+
+def do_login(user):
+    """Log in user."""
+
+    session[CURR_USER_KEY] = user.id
+
+def do_logout():
+    """Logout user."""
+
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Generates and handles registration submission"""
+    """Generate and handles registration submission"""
 
     if 'username' in session:
         flash("You'll need to log out to view that page.", "text-danger")
@@ -47,21 +59,23 @@ def register():
         username = form.username.data
         password = form.password.data
         email = form.email.data
+        image = form.image.data
         first_name = form.first_name.data
         last_name = form.last_name.data
+        bio = form.bio.data
 
-        u = User.register(username, password, email, first_name, last_name)
+        u = User.register(username=username, pwd=password, email=email, first=first_name, last=last_name, bio=bio, image=image)
 
         db.session.add(u)
         try:
             db.session.commit()
         except IntegrityError:
             form.username.errors.append('Sorry, this username is already taken. Please choose another')
-            return render_template('register.html', form=form)
+            return render_template('users/register.html', form=form)
 
         session['username'] = u.username
         flash('Your account has been created. Welcome to BookTalk!', "text-success")
-        return redirect (f"/users/{u.username}")
+        return redirect (f"/")
     
     return render_template('register.html', form=form)
 
@@ -70,7 +84,7 @@ def login():
     """Generates and handles login form submission"""
     if 'username' in session:
         flash("You'll need to log out to view that page.", "text-danger")
-        return redirect(f"/users/{session['username']}")
+        return redirect(f"/home")
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -85,10 +99,35 @@ def login():
         else:
             form.username.errors = ['Invalid username/password.']
 
-    return render_template('login.html', form=form)
+    return render_template('users/login.html', form=form)
+
+@app.route("/logout")
+def logout():
+    """Logs out current user"""
+
+    session.pop("username")
+
+    return redirect("/login")
 
 
-##### Routes for clubs #####
+###########################################################################
+# Home page
+
+
+@app.route("/")
+def show_home():
+    """Show home page."""
+
+    # If no user is signed in, redirect to log-in page
+    if 'username' not in session:
+        
+        return redirect("/login")
+
+    return render_template("home.html")
+
+
+############################################################################
+# Clubs routes
 
 
 @app.route("/clubs")
