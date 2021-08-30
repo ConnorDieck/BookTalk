@@ -29,7 +29,7 @@ toolbar = DebugToolbarExtension(app)
 def load_user():
     """If logged in, load curr user."""
     if CURR_USER_KEY in session:
-        g.user = db.session.get(session[CURR_USER_KEY])
+        g.user = User.query.get(session[CURR_USER_KEY])
 
     else:
         g.user = None
@@ -49,9 +49,9 @@ def do_logout():
 def register():
     """Generate and handles registration submission"""
 
-    if 'username' in session:
-        flash("You'll need to log out to view that page.", "text-danger")
-        return redirect(f"/users/{session['username']}")
+    if g.user:
+        flash("You're already registered", "text-danger")
+        return redirect(f"/")
 
     form = RegisterForm()
     if form.validate_on_submit():
@@ -64,27 +64,30 @@ def register():
         last_name = form.last_name.data
         bio = form.bio.data
 
-        u = User.register(username=username, pwd=password, email=email, first=first_name, last=last_name, bio=bio, image=image)
+        user = User.register(username=username, pwd=password, email=email, first=first_name, last=last_name, bio=bio, image=image)
 
-        db.session.add(u)
+        db.session.add(user)
         try:
             db.session.commit()
         except IntegrityError:
             form.username.errors.append('Sorry, this username is already taken. Please choose another')
             return render_template('users/register.html', form=form)
 
-        session['username'] = u.username
-        flash('Your account has been created. Welcome to BookTalk!', "text-success")
-        return redirect (f"/")
+        do_login(user)
+
+        flash(f'Your account has been created. Welcome to BookTalk, {user.username}!', "text-success")
+
+        return redirect ("/")
     
-    return render_template('register.html', form=form)
+    else:
+        return render_template('users/register.html', form=form)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Generates and handles login form submission"""
-    if 'username' in session:
-        flash("You'll need to log out to view that page.", "text-danger")
-        return redirect(f"/home")
+    if g.user:
+        flash("You're already logged in.", "text-danger")
+        return redirect("/")
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -93,9 +96,9 @@ def login():
 
         user = User.authenticate(username, password)
         if user:
-            flash(f"Welcome Back, {user.first_name}!", "text-primary")
-            session['username'] = user.username
-            return redirect(f'/users/{user.username}')
+            # flash(f"Welcome Back, {user.first_name}!", "text-primary")
+            do_login(user)
+            return redirect('/')
         else:
             form.username.errors = ['Invalid username/password.']
 
@@ -105,7 +108,7 @@ def login():
 def logout():
     """Logs out current user"""
 
-    session.pop("username")
+    do_logout()
 
     return redirect("/login")
 
@@ -119,11 +122,12 @@ def show_home():
     """Show home page."""
 
     # If no user is signed in, redirect to log-in page
-    if 'username' not in session:
+    if g.user:
         
-        return redirect("/login")
+        return render_template("home.html", user=g.user)
 
-    return render_template("home.html")
+    else:
+        return redirect("/login")
 
 
 ############################################################################
