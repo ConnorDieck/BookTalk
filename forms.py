@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.recaptcha import validators
-from wtforms import StringField, FloatField, PasswordField
+from wtforms import StringField, FloatField, PasswordField, TextAreaField
 from wtforms.validators import Email, InputRequired
 from wtforms.fields.html5 import EmailField
 
@@ -8,8 +8,10 @@ class RegisterForm(FlaskForm):
     username = StringField("Username", validators=[InputRequired()])
     password = PasswordField("Password", validators=[InputRequired()])
     email = EmailField("Email", validators=[InputRequired(), Email()])
+    image = StringField("Image URL", validators=[InputRequired()])
     first_name = StringField("First Name", validators=[InputRequired()])
     last_name = StringField("Last Name", validators=[InputRequired()])
+    bio = TextAreaField("Bio", validators=[InputRequired()])
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[InputRequired()])
