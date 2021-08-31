@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Clubs{% endblock %}
+
+{% block content %}
+
+<h1>Clubs on BookTalk</h1>
+
+<div class="row">
+    
+        {% for club in clubs %}
+            <div class="card club-card" style="width: 18rem">
+                <div class="card-body">
+                    {% for book in club.books %}
+                        {% for read in book.reads %}
+                            {% if read.current %}
+                                <img src="{{ book.image }}" alt="{{ book.title }}" class="card-img-top">
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    <h5 class="card-title">{{ club.name }}</h5>
+                    {% for book in club.books %}
+                        {% for read in book.reads %}
+                            {% if read.current %}
+                                <p>Currently reading: <b>{{ book.title }}</b></p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    <a href="/clubs/{{ club.id }}" class="btn btn-primary">Check out this club</a>
+                </div>
+            </div>
+        {% endfor %}
+ 
+</div>
+
+
+{% endblock %}

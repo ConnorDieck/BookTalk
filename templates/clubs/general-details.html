@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ club.name }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ club.name }} Details Page</h1>
+
+<button class="btn btn-success">Join club</button>
+
+<h3>Currently reading:                     
+    {% for book in club.books %}
+        {% for read in book.reads %}
+            {% if read.current %}
+            <div>
+                <b>{{ book.title }}</b>
+                <br>
+                <img src="{{ book.image }}" alt="{{ book.title }}">
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</h3>
+
+ <h3>Users in this club:</h3>
+ <ul>
+    {% for user in club.users %}
+        <li><a href="/users/{ user.id }">{{ user.username }}</a></li>
+    {% endfor %}
+ </ul>
+
+ <h3>On the shelf:</h3>
+ <ul>
+    {% for book in club.books %}
+        {% for read in book.reads %}
+            {% if not read.current %}
+                <div>
+                    <b>{{ book.title }}</b>
+                    <br>
+                    <img src="{{ book.image }}" alt="{{ book.title }}">
+                </div>
+            {% else %}
+                <li>No previous books</li>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+ </ul>
+
+{% endblock %}

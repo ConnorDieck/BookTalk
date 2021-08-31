@@ -4,6 +4,6 @@
 
 {% block content %}
 
-<h1>Welcome to Booktalk, {{user.username}} !</h1>
+<h1>Welcome {% if first %}to BookTalk {% else %} back to BookTalk {% endif %}, {{user.username}} !</h1>
 
 {% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ club.name }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ club.name }} Details Page</h1>
+
+<h3>Currently reading:                     
+    {% for book in club.books %}
+        {% for read in book.reads %}
+            {% if read.current %}
+            <a href="/books/{{ book.id }}">
+                <div class="card curr-read" style="width: 18rem"" data-status="{{ read.complete }}">
+                    <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title curr-title">{{ book.title }}</h5>
+                    </div>
+                    <button class="btn btn-success" id="finish-book">Mark as Finished</button>
+                </div>
+            </a>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</h3>
+
+ <h3>Users in this club:</h3>
+ <ul>
+    {% for user in club.users %}
+        <li><a href="/users/{ user.id }">{{ user.username }}</a></li>
+    {% endfor %}
+ </ul>
+
+ <h3>Shelves:</h3>
+
+ 
+    {% if club.books|length > 1 %}
+    <div class="row shelf-finished">
+        {% for book in club.books %}
+            {% for read in book.reads %}
+                    {% if read.complete %}
+                        <div class="col-sm-6">
+                            <a href="/books/{{ book.id }}">
+                                <div class="card shelf-read" style="width: 15rem"" data-status="{{ read.complete }}">
+                                    <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title curr-title">{{ book.title }}</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+    {% else %}
+        <div>No previous books</div>
+    {% endif %}
+
+
+
+
+{% endblock %}
