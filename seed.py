@@ -41,9 +41,11 @@ db.session.commit()
 # In the full app, will need to send request to openlibrary's API to fetch model information
 azkaban = Book(title="Harry Potter and the Prisoner of Azkaban", author="JK Rowling", image="/static/images/azkaban.jpeg", num_pages=317, publish_date="8 July 1999")
 goblet = Book(title="Harry Potter and the Goblet of Fire", author="JK Rowling", image="/static/images/goblet.png", num_pages=636, publish_date="8 July 2000")
+phoenix = Book(title="Harry Potter and the Order of the Phoenix", author="JK Rowling", image="/static/images/phoenix.jpeg", num_pages=766, publish_date="21 June 2003")
 fellowship = Book(title="The Fellowship of the Ring", author="JRR Tolkien", image="/static/images/fellowship.jpeg", num_pages=423, publish_date="29 July 1954")
+hobbit = Book(title="The Hobbit", author="JRR Tolkien", image="/static/images/hobbit.jpeg", num_pages=310, publish_date="21 September 1937")
 
-db.session.add_all([azkaban, goblet, fellowship])
+db.session.add_all([azkaban, goblet, fellowship, phoenix, hobbit])
 
 db.session.commit()
 
@@ -60,6 +62,8 @@ c2 = Club.query.filter_by(name="The Hobbits").first()
 b1 = Book.query.filter_by(title="Harry Potter and the Prisoner of Azkaban").first()
 b2 = Book.query.filter_by(title="Harry Potter and the Goblet of Fire").first()
 b3 = Book.query.filter_by(title="The Fellowship of the Ring").first()
+b4 = Book.query.filter_by(title="Harry Potter and the Order of the Phoenix").first()
+b5 = Book.query.filter_by(title="The Hobbit").first()
 
 
 ### Memberships ###
@@ -82,10 +86,17 @@ db.session.commit()
 
 ### Reads ###
 
-r1 = Read(club_id=c1.id, book_id=b1.id, current=False)
-r2 = Read(club_id=c1.id, book_id=b2.id, current=True)
-r3 = Read(club_id=c2.id, book_id=b3.id, current=True)
+# Harry Potter
+r1 = Read(club_id=c1.id, book_id=b1.id, current=False, complete=True)
+r2 = Read(club_id=c1.id, book_id=b2.id, current=True, complete=False)
+r3 = Read(club_id=c1.id, book_id=b4.id, current=False, complete=False)
 
-db.session.add_all([r1, r2, r3])
+# Lord of the Rings
+r4 = Read(club_id=c2.id, book_id=b3.id, current=True, complete=False)
+r5 = Read(club_id=c2.id, book_id=b5.id, current=False, complete=True)
+
+
+
+db.session.add_all([r1, r2, r3, r4, r5])
 
 db.session.commit()
