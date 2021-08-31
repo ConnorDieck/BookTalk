@@ -76,8 +76,9 @@ def register():
         do_login(user)
 
         flash(f'Your account has been created. Welcome to BookTalk, {user.username}!', "text-success")
+        first = True
 
-        return redirect ("/")
+        return redirect ("/", first=first)
     
     else:
         return render_template('users/register.html', form=form)
@@ -138,7 +139,26 @@ def show_home():
 def show_clubs():
     """Shows list of active clubs"""
 
+    if not g.user:
+        flash("You need to be logged in with a registered account to view that page.", "text-danger")
+        return redirect("/")
+
     clubs = Club.query.all()
 
-    return render_template("clubs.html", clubs=clubs)
+    return render_template("clubs/list.html", clubs=clubs)
 
+@app.route("/clubs/<int:club_id>")
+def show_club_page(club_id):
+    """Shows page with club details"""
+
+    if not g.user:
+        flash("You need to be logged in with a registered account to view that page.", "text-danger")
+        return redirect("/")
+    
+    club = Club.query.get_or_404(club_id)
+
+    if g.user in club.users:
+        return render_template("clubs/member-details.html", club=club)
+
+    else:
+        return render_template("clubs/general-details.html", club=club)
