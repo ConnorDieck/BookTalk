@@ -87,6 +87,12 @@ class Club(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(20), nullable=False, unique=True) 
 
+    # Map directly to reads (important for finding current book)
+    reads = db.relationship('Read', backref="clubs")
+
+    # Map directly to memberships (important for seeing join dates of users)
+    memberships = db.relationship('Membership', backref="clubs")
+
 class Membership(db.Model):
     """Membership model, maps users to clubs"""
 
@@ -119,3 +125,4 @@ class Read(db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'), primary_key=True)
 
     current = db.Column(db.Boolean)
+    complete = db.Column(db.Boolean)
