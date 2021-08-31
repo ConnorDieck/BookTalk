@@ -33,29 +33,47 @@
 
  <h3>Shelves:</h3>
 
- 
-    {% if club.books|length > 1 %}
-    <div class="row shelf-finished">
-        {% for book in club.books %}
-            {% for read in book.reads %}
-                    {% if read.complete %}
-                        <div class="col-sm-6">
-                            <a href="/books/{{ book.id }}">
-                                <div class="card shelf-read" style="width: 15rem"" data-status="{{ read.complete }}">
-                                    <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
-                                    <div class="card-body">
-                                        <h5 class="card-title curr-title">{{ book.title }}</h5>
-                                    </div>
+ <div class="shelf">
+    <h4>Finished:</h4>
+        {% if finished|length >= 1 %}
+            <div class="row shelf-finished">
+                {% for book in finished %}
+                    <div class="col-sm-6">
+                        <a href="/books/{{ book.id }}">
+                            <div class="card book-finished" style="width: 15rem">
+                                <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
+                                <div class="card-body">
+                                    <h5 class="card-title curr-title">{{ book.title }}</h5>
                                 </div>
-                            </a>
-                        </div>
-                    {% endif %}
-            {% endfor %}
-        {% endfor %}
-    </div>
-    {% else %}
-        <div>No previous books</div>
-    {% endif %}
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            {% else %}
+                <div>No books finished yet!</div>
+        {% endif %}
+    <h4>To Read:</h4>
+        {% if unfinished|length >= 1 %}
+            <div class="row shelf-unfinished">
+                {% for book in unfinished %}
+                    <div class="col-sm-6">
+                        <a href="/books/{{ book.id }}">
+                            <div class="card shelf-read" style="width: 15rem">
+                                <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
+                                <div class="card-body">
+                                    <h5 class="card-title curr-title">{{ book.title }}</h5>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            {% else %}
+                <div>No books added yet!</div>
+        {% endif %}
+ </div>
+ 
 
 
 

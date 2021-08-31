@@ -6,6 +6,8 @@ from sqlalchemy.exc import IntegrityError
 from models import db, connect_db, User, Book, Club, Membership, Read, Note
 from forms import LoginForm, RegisterForm, NotesForm, DeleteForm
 
+import pdb
+
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -158,7 +160,32 @@ def show_club_page(club_id):
     club = Club.query.get_or_404(club_id)
 
     if g.user in club.users:
-        return render_template("clubs/member-details.html", club=club)
+        # Create list of club's books
+        reads = []
+        for book in club.books:
+            for read in book.reads:
+                reads.append(read)
+
+        # Create list of reads that are not current
+        shelved = []
+        for read in reads:
+            if not read.current:
+                shelved.append(read)
+
+        # From shelved books, separate books that have been finished
+        finished_ids = []
+        unfinished_ids = []
+        for read in shelved:
+            if read.complete:
+                finished_ids.append(read.book_id)
+            else:
+                unfinished_ids.append(read.book_id)
+        finished = Book.query.filter(Book.id.in_(finished_ids)).all()
+        unfinished = Book.query.filter(Book.id.in_(unfinished_ids)).all()
+
+        # pdb.set_trace()
+
+        return render_template("clubs/member-details.html", club=club, unfinished=unfinished, finished=finished)
 
     else:
         return render_template("clubs/general-details.html", club=club)
