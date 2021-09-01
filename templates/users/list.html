@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}BookTalkers{% endblock %}
+
+{% block content %}
+
+<h1 class="header">BookTalkers:</h1>
+
+
+<div class="row">
+        {% for user in users %}
+        <div class="card user-card" style="width: 18rem;">
+            <div class="card-body">
+                <img src="{{ user.image }}" alt="{{ user.username }} profile image" class="card-img-top">
+                <h5 class="card-title">{{ user.username }}</h5>
+                <a href="/users/{{ user.id }}" class="btn btn-primary">Check out this user</a>
+            </div>
+        </div>
+        {% endfor %}
+</div>
+
+
+{% endblock %}

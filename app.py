@@ -4,7 +4,7 @@ from werkzeug.exceptions import Unauthorized
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, Book, Club, Membership, Read, Note
-from forms import LoginForm, RegisterForm, NotesForm, DeleteForm
+from forms import LoginForm, RegisterForm, NotesForm, DeleteForm, EditUserForm
 
 import pdb
 
@@ -132,6 +132,74 @@ def show_users():
     users = User.query.all()
 
     return render_template("users/list.html", users=users)
+
+@app.route("/users/<int:user_id>")
+def user_details(user_id):
+    """Shows user profile if logged in."""
+
+    if not g.user:
+        flash("You need to be logged in with a registered account to view that page.", "text-danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+
+    return render_template("users/details.html", user=user)
+
+@app.route("/users/<int:user_id>/edit", methods=["GET", "POST"])
+def edit_user(user_id):
+    """Generates and handles submission of user edit form"""
+
+    user = User.query.get_or_404(user_id)
+
+    if not g.user or user is not g.user:
+        flash("In order to edit a profile, you must sign into that profile.", "text-danger")
+        return redirect("/")
+
+    form = EditUserForm()
+    if form.validate_on_submit():
+
+        username = form.username.data
+        email = form.email.data
+        image = form.image.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        bio = form.bio.data
+
+        user.username = username
+        user.email = email
+        user.image = image
+        user.first_name = first_name
+        user.last_name = last_name
+        user.bio = bio
+
+        try:
+            db.session.commit()
+        except IntegrityError:
+            form.username.errors.append('Sorry, this username is already taken. Please choose another')
+            return render_template('users/edit.html', form=form)
+
+        return redirect (f"/users/{user.id}")
+    
+    else:
+        return render_template('users/edit.html', form=form, user=user)
+
+@app.route("/users/<int:user_id>/delete", methods=["POST"])
+def delete_user(user_id):
+    """Delete user."""
+
+    user = User.query.get_or_404(user_id)
+
+    if not g.user or user is not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    do_logout()
+
+    db.session.delete(g.user)
+    db.session.commit()
+
+    return redirect("/register")
+
 
 
 ###########################################################################

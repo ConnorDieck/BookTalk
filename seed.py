@@ -16,11 +16,15 @@ User.query.delete()
 whiskey = User.register(username='Whiskey', bio="loves cocktail books", pwd="oldfashioned", first="Jack", last="Daniels", image="/static/images/jack_daniels.jpeg", email="whiskey@test.com")
 bowser = User.register(username='Bowser', bio="reads Princess Peach catalogues", pwd="ihatemario", first="Bowser", last="Koopa", image="/static/images/bowser.png", email="bowser@test.com")
 spike = User.register(username='Spike', bio="would like to read more", pwd="ouch", first="Spikey", last="Spike", image="/static/images/spike.png", email="spike@test.com")
+mario = User.register(username='Mario', bio="mama mía", pwd="superstar", first="Mario", last="Mario", image="/static/images/mario.png", email="jumpman@test.com")
+luigi = User.register(username='Luigi', bio="m-m-m-maaariooo??", pwd="daisy", first="Luigi", last="Mario", image="/static/images/luigi.png", email="imscared@test.com")
 
 # Add new objects to session, so they'll persist
 db.session.add(whiskey)
 db.session.add(bowser)
 db.session.add(spike)
+db.session.add(mario)
+db.session.add(luigi)
 
 # Commit--otherwise, this never gets saved!
 db.session.commit()

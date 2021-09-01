@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }} Profile{% endblock %}
+
+{% block content %}
+
+<h1 class="header">{{ user.username }} Details</h1>
+
+<div class="container profile-container">
+    <img src="{{ user.image }}" alt="{{ user.username }} profile image" id="profile-pic">
+</div>
+
+<ul>
+    <li>Username: {{ user.username }}</li>
+    <li>Name: {{ user.first_name }} {{ user.last_name }}</li>
+    <li>Email: {{ user.email }}</li>
+    <li>Bio: {{ user.bio }}</li>
+</ul>
+
+{% if user.id == g.user.id %}
+    <a href="/users/{{ user.id }}/edit" class="btn btn-success">Edit Profile</a>
+    <form method="POST" action="/users/{{ user.id }}/delete" class="form-inline">
+        <button class="btn btn-outline-danger ml-2">Delete Profile</button>
+    </form>
+{% endif %}
+
+
+
+{% endblock %}
