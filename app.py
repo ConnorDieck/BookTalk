@@ -116,6 +116,24 @@ def logout():
     return redirect("/login")
 
 
+
+############################################################################
+# User routes
+
+
+@app.route("/users")
+def show_users():
+    """Shows a list of users in the app if logged in"""
+
+    if not g.user:
+        flash("You need to be logged in with a registered account to view that page.", "text-danger")
+        return redirect("/")
+
+    users = User.query.all()
+
+    return render_template("users/list.html", users=users)
+
+
 ###########################################################################
 # Home page
 
@@ -134,7 +152,7 @@ def show_home():
 
 
 ############################################################################
-# Clubs routes
+# Club routes
 
 
 @app.route("/clubs")
@@ -159,6 +177,7 @@ def show_club_page(club_id):
     
     club = Club.query.get_or_404(club_id)
 
+    # If user is in the club, they will see a more detailed club page
     if g.user in club.users:
         # Create list of club's books
         reads = []
@@ -183,9 +202,20 @@ def show_club_page(club_id):
         finished = Book.query.filter(Book.id.in_(finished_ids)).all()
         unfinished = Book.query.filter(Book.id.in_(unfinished_ids)).all()
 
-        # pdb.set_trace()
-
         return render_template("clubs/member-details.html", club=club, unfinished=unfinished, finished=finished)
 
     else:
         return render_template("clubs/general-details.html", club=club)
+
+@app.route("/clubs/create", methods=["POST"])
+def create_club():
+    """Allows a website user to create a new club"""
+
+    # TO DO
+
+@app.route("/clubs/delete", methods=["DELETE"])
+def delete_club():
+    """Deletes a member to delete a club he or she is a part of"""
+
+    # TO DO
+
