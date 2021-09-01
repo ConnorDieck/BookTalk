@@ -29,9 +29,12 @@ db.session.commit()
 #### Clubs ####
 potter_fans = Club(name="Potter Fan Club")
 lotr_nerds = Club(name="The Hobbits")
+empty1 = Club(name="Empty Club 1")
+empty2 = Club(name="Empty Club 2")
+empty3 = Club(name="Empty Club 3")
+empty4 = Club(name="Empty Club 4")
 
-db.session.add(potter_fans)
-db.session.add(lotr_nerds)
+db.session.add_all([potter_fans, lotr_nerds, empty1, empty2, empty3, empty4])
 
 db.session.commit()
 
