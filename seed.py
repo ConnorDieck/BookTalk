@@ -127,9 +127,11 @@ m1.notes.append(n2)
 m3.notes.append(n3)
 
 
-
 ### Add favorites ###
 
-u1.favorites.append(b1)
-u2.favorites.append(b2)
+f1 = Favorite(user_id=u1.id, book_id=b1.id)
+f2 = Favorite(user_id=u2.id, book_id=b2.id)
 u3.favorites.append(b3)
+
+db.session.add_all([f1, f2])
+db.session.commit()

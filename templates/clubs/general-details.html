@@ -6,23 +6,32 @@
 
 <h1>{{ club.name }} Details Page</h1>
 
-<button class="btn btn-success">Join club</button>
+<form action="/clubs/{{ club.id }}/join" method="post">
+    <button class="btn btn-outline-success">
+        Join club
+    </button>
+</form>
 
 <h3>Current book:                     
     {% for book in club.books %}
         {% for read in book.reads %}
             {% if read.current %}
-            <a href="/books/{{ book.id }}">
-                <div class="card curr-read" style="width: 18rem"" data-status="{{ read.complete }}">
+            <div class="card curr-read" style="width: 18rem">
+                <a href="/books/{{ book.id }}">
                     <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
-                    <div class="card-body">
-                        <h5 class="card-title curr-title">{{ book.title }}</h5>
-                    </div>
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title curr-title">
+                        <a href="/books/{{ book.id }}">
+                            {{ book.title }}
+                        </a>
+                    </h5>
                 </div>
-            </a>
+            </div>
             {% endif %}
         {% endfor %}
     {% endfor %}
 </h3>
+
 
 {% endblock %}

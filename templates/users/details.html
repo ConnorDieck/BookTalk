@@ -17,6 +17,17 @@
     <li>Bio: {{ user.bio }}</li>
 </ul>
 
+<h5>{{ user.username }}'s Favorites:</h5>
+<div class="row favorites">
+    {% for book in user.favorites %}
+        <div class="fav-tile">
+            <a href="/books/{{ book.id }}">
+                {{ book.title }}
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
 {% if user.id == g.user.id %}
     <a href="/users/{{ user.id }}/edit" class="btn btn-success">Edit Profile</a>
     <form method="POST" action="/users/{{ user.id }}/delete" class="form-inline">

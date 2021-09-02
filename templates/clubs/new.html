@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}New Club{% endblock %}
+
+{% block content %}
+
+<h1 class="display-1">Create a new BookTalk Club</h1>
+<p class="lead">Enter the name for your new club below!</p>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, msg in messages %}
+            <p class="{{ category }}">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form action="" method="POST">
+
+    {{ form.hidden_tag() }}
+
+    {% for field in form if field.widget.input_type != 'hidden' %}
+        <p>
+            {{ field.label }}
+            {{ field(class_="form-control") }}
+
+            {% for error in field.errors %}
+                <span class="form-text text-danger">{{ error }}</span>
+            {% endfor %}
+        </p>
+    {% endfor %}
+
+    <button class="btn btn-success" type="submit">Create Club</button>
+    <a href="/clubs" class="btn btn-danger">Cancel</a>
+
+</form>
+
+{% endblock %}

@@ -3,8 +3,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from werkzeug.exceptions import Unauthorized
 from sqlalchemy.exc import IntegrityError
 
-from models import db, connect_db, User, Book, Club, Membership, Read, Note
-from forms import LoginForm, RegisterForm, NotesForm, DeleteForm, EditUserForm
+from models import db, connect_db, User, Book, Club, Membership, Read, Note, Meeting, Favorite
+from forms import LoginForm, RegisterForm, NotesForm, DeleteForm, EditUserForm, ClubForm
 
 import pdb
 
@@ -275,15 +275,68 @@ def show_club_page(club_id):
     else:
         return render_template("clubs/general-details.html", club=club)
 
-@app.route("/clubs/create", methods=["POST"])
+@app.route("/clubs/create", methods=["GET", "POST"])
 def create_club():
-    """Allows a website user to create a new club"""
+    """Generates and handles submission of new club form"""
 
-    # TO DO
+    if not g.user:
+        flash("In order to edit a profile, you must sign into that profile.", "text-danger")
+        return redirect("/")
 
-@app.route("/clubs/delete", methods=["DELETE"])
-def delete_club():
+    form = ClubForm()
+    if form.validate_on_submit():
+
+        name = form.name.data
+        club = Club(name=name)
+
+        try:
+            db.session.add(club)
+            db.session.commit()
+        except IntegrityError:
+            form.name.errors.append('Sorry, this club name is already taken. Please choose another')
+            return render_template('clubs/new.html', form=form)
+        
+        c = Club.query.filter(Club.name==name).first()
+
+        return redirect (f"/clubs/{c.id}")
+    
+    else:
+        return render_template('clubs/new.html', form=form)
+
+@app.route("/clubs/<int:club_id>/delete", methods=["POST"])
+def delete_club(club_id):
     """Deletes a member to delete a club he or she is a part of"""
 
-    # TO DO
+    if not g.user:
+        flash("In order to edit a profile, you must sign into that profile.", "text-danger")
+        return redirect("/")
 
+    club = db.session.query(Club).get_or_404(club_id)
+
+    if g.user not in club.users:
+        flash("You can't delete a club that you're not a part of.", "danger")
+        return redirect("/clubs")
+    
+    db.session.delete(club)
+    db.session.commit()
+
+    return redirect("/clubs")
+
+@app.route("/clubs/<int:club_id>/join", methods=["POST"])
+def join_club(club_id):
+    """Join a club"""
+
+    if not g.user:
+        flash("In order to edit a profile, you must sign into that profile.", "text-danger")
+        return redirect("/")
+
+    club = db.session.query(Club).get_or_404(club_id)
+
+    if g.user in club.users:
+        flash("You're already part of this club.'", "danger")
+        return redirect(f"/clubs/{club_id}")
+    
+    g.user.clubs.append(club)
+    db.session.commit()
+
+    return redirect(f"/clubs/{club_id}")

@@ -4,32 +4,47 @@
 
 {% block content %}
 
-<h1>{{ club.name }} Details Page</h1>
+<h1>{{ club.name }}</h1>
 
 <h3>Currently reading:                     
     {% for book in club.books %}
         {% for read in book.reads %}
             {% if read.current %}
-            <a href="/books/{{ book.id }}">
-                <div class="card curr-read" style="width: 18rem"" data-status="{{ read.complete }}">
-                    <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
-                    <div class="card-body">
-                        <h5 class="card-title curr-title">{{ book.title }}</h5>
-                    </div>
+                <div class="card curr-read" style="width: 18rem">
+                    <a href="/books/{{ book.id }}">
+                        <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
+                    </a>
+                        <div class="card-body">
+                            <h5 class="card-title curr-title">
+                                <a href="/books/{{ book.id }}">
+                                    {{ book.title }}
+                                </a>
+                            </h5>
+                        </div>
                     <button class="btn btn-success" id="finish-book">Mark as Finished</button>
                 </div>
-            </a>
             {% endif %}
         {% endfor %}
     {% endfor %}
 </h3>
 
- <h3>Users in this club:</h3>
+ <h3>BookTalkers in {{ club.name }}:</h3>
  <ul>
     {% for user in club.users %}
         <li><a href="/users/{{ user.id }}">{{ user.username }}</a></li>
     {% endfor %}
  </ul>
+
+ <h3>Meetings:</h3>
+ <div class="row">
+    {% for meeting in club.meetings %}
+        <div class="meeting-tile">
+            <a href="/clubs/meetings/{{ meeting.id }}">
+                {{ meeting.date }}
+            </a>
+        </div>
+    {% endfor %}
+ </div>
 
  <h3>Shelves:</h3>
 
@@ -39,14 +54,17 @@
             <div class="row shelf-finished">
                 {% for book in finished %}
                     <div class="col-sm-6">
-                        <a href="/books/{{ book.id }}">
-                            <div class="card book-finished" style="width: 15rem">
+                        <div class="card book-finished" style="width: 15rem">
+                            <a href="/books/{{ book.id }}">
                                 <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
-                                <div class="card-body">
-                                    <h5 class="card-title curr-title">{{ book.title }}</h5>
-                                </div>
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title curr-title">
+                                    <a href="/books/{{ book.id }}">
+                                        {{ book.title }}
+                                    </a>
+                                </h5>
                             </div>
-                        </a>
                     </div>
                 {% endfor %}
             </div>
@@ -58,14 +76,18 @@
             <div class="row shelf-unfinished">
                 {% for book in unfinished %}
                     <div class="col-sm-6">
-                        <a href="/books/{{ book.id }}">
-                            <div class="card shelf-read" style="width: 15rem">
+                        <div class="card book-unfinished" style="width: 15rem">
+                            <a href="/books/{{ book.id }}">
                                 <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
-                                <div class="card-body">
-                                    <h5 class="card-title curr-title">{{ book.title }}</h5>
-                                </div>
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title curr-title">
+                                    <a href="/books/{{ book.id }}">
+                                        {{ book.title }}
+                                    </a>
+                                </h5>
                             </div>
-                        </a>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -74,7 +96,9 @@
         {% endif %}
  </div>
  
-
+ <form method="POST" action="/clubs/{{ club.id }}/delete" class="form-inline">
+    <button class="btn btn-outline-danger ml-2">Delete Club</button>
+</form>
 
 
 

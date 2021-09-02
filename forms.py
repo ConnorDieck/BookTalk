@@ -21,6 +21,9 @@ class EditUserForm(FlaskForm):
     last_name = StringField("Last Name", validators=[InputRequired()])
     bio = TextAreaField("Bio", validators=[InputRequired()])
 
+class ClubForm(FlaskForm):
+    name = StringField("Club Name", validators =[InputRequired()])
+
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[InputRequired()])
     password = PasswordField("Password", validators=[InputRequired()])
