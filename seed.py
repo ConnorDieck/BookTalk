@@ -1,6 +1,6 @@
 """Seed file to make sample data for Users db."""
 
-from models import db, User, Club, Book, Membership, Read, Note
+from models import Meeting, db, User, Club, Book, Membership, Read, Note, Favorite
 from app import app
 
 # Create all tables
@@ -81,14 +81,29 @@ u2.clubs.append(c1)
 u3.clubs.append(c1)
 u3.clubs.append(c2)
 
-### Notes ###
+### Meetings ###
 
-n1 = Note(user_id=u1.id, book_id=b1.id, text="This is my favorite Harry Potter book. I love Sirius and Harry's relationship.", discussion_date="26 Aug 2021")
-n2 = Note(user_id=u2.id, book_id=b1.id, text="I bet Dementors would be a good defense against Mario....", discussion_date="26 Aug 2021")
-n3 = Note(user_id=u3.id, book_id=b3.id, text="My favorite member of the Fellowship is Gimli because he's short like me", discussion_date="28 August 2021")
+meeting1 = Meeting(date="9/20/21", club_id=c1.id)
+meeting2 = Meeting(date="9/30/21", club_id=c1.id)
+meeting3 = Meeting(date="9/20/21", club_id=c2.id)
+meeting4 = Meeting(date="9/30/21", club_id=c2.id)
+
+db.session.add_all([meeting1, meeting2, meeting3, meeting4])
+db.session.commit()
+
+m1 = db.session.query(Meeting).filter( Meeting.date == "9/20/21", Meeting.club_id == c1.id).first()
+m2 = db.session.query(Meeting).filter( Meeting.date == "9/30/21", Meeting.club_id == c1.id).first()
+m3 = db.session.query(Meeting).filter( Meeting.date == "9/20/21", Meeting.club_id == c2.id).first()
+m4 = db.session.query(Meeting).filter( Meeting.date == "9/30/21", Meeting.club_id == c2.id).first()
+
+## Notes ###
+
+# The first note will be associated with a meeting from the outset. The rest will be added via append later
+n1 = Note(user_id=u1.id, book_id=b1.id, text="This is my favorite Harry Potter book. I love Sirius and Harry's relationship.", meeting_id=m1.id)
+n2 = Note(user_id=u2.id, book_id=b1.id, text="I bet Dementors would be a good defense against Mario....")
+n3 = Note(user_id=u3.id, book_id=b3.id, text="My favorite member of the Fellowship is Gimli because he's short like me")
 
 db.session.add_all([n1, n2, n3])
-
 db.session.commit()
 
 ### Reads ###
@@ -102,8 +117,19 @@ r3 = Read(club_id=c1.id, book_id=b4.id, current=False, complete=False)
 r4 = Read(club_id=c2.id, book_id=b3.id, current=True, complete=False)
 r5 = Read(club_id=c2.id, book_id=b5.id, current=False, complete=True)
 
-
-
 db.session.add_all([r1, r2, r3, r4, r5])
-
 db.session.commit()
+
+
+### Add remaining notes to meetings ###
+
+m1.notes.append(n2)
+m3.notes.append(n3)
+
+
+
+### Add favorites ###
+
+u1.favorites.append(b1)
+u2.favorites.append(b2)
+u3.favorites.append(b3)

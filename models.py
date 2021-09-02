@@ -12,6 +12,8 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
+
+
 class User(db.Model):
     """User model"""
 
@@ -30,6 +32,9 @@ class User(db.Model):
     clubs = db.relationship('Club', secondary="memberships", backref="users")
     # Map directly to memberships (important to view join date)
     membership = db.relationship('Membership', backref="users")
+
+    # Map to books if added to favorites table
+    favorites = db.relationship('Book', secondary="favorites", backref="users_favorites")
 
     # Map directly to notes so you can see the notes a user has made on each book
     notes = db.relationship('Note', backref="users")
@@ -59,6 +64,7 @@ class User(db.Model):
             return False
 
 
+
 class Book(db.Model):
     """Book model"""
 
@@ -79,6 +85,8 @@ class Book(db.Model):
     # Map directly to notes so you can see the notes a on each book
     notes = db.relationship('Note', backref="books")
 
+
+
 class Club(db.Model):
     """Club model"""
 
@@ -93,26 +101,52 @@ class Club(db.Model):
     # Map directly to memberships (important for seeing join dates of users)
     memberships = db.relationship('Membership', backref="clubs")
 
-class Membership(db.Model):
-    """Membership model, maps users to clubs"""
+    meetings = db.relationship('Meeting', backref="clubs")
 
-    __tablename__ = "memberships"
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id'), primary_key=True)
 
-    join_date = db.Column(db.Date)
+class Meeting(db.Model):
+    """Clubs can have various meetings with appropriate dates. Also connects to notes to allow for discussion points to be planned for specific meetings"""
+
+    __tablename__ = "meetings"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date = db.Column(db.String, nullable=False)
+    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id', ondelete="cascade"))
+    
+    # Map meeting to related notes
+    notes = db.relationship('Note', backref="meeting")
+
+
 
 class Note(db.Model):
     """Connects users with books, allows for multiple users to add notes to multiple books"""
 
     __tablename__ = "notes"
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    book_id = db.Column(db.Integer, db.ForeignKey('books.id'), primary_key=True)
-
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     text = db.Column(db.Text)
-    discussion_date = db.Column(db.Text)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="cascade"), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete="cascade"), nullable=False)
+    meeting_id = db.Column(db.Integer, db.ForeignKey('meetings.id', ondelete="SET NULL"))
+
+
+
+###########################################################################
+# Relationship models:
+
+
+
+class Membership(db.Model):
+    """Membership model, maps users to clubs"""
+
+    __tablename__ = "memberships"
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="cascade"), primary_key=True)
+    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id', ondelete="cascade"), primary_key=True)
+
+    join_date = db.Column(db.Date)
 
 
 
@@ -121,8 +155,19 @@ class Read(db.Model):
 
     __tablename__ = "reads"
 
-    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id'), primary_key=True)
-    book_id = db.Column(db.Integer, db.ForeignKey('books.id'), primary_key=True)
+    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id', ondelete="cascade"), primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete="cascade"), primary_key=True)
 
     current = db.Column(db.Boolean)
     complete = db.Column(db.Boolean)
+
+
+
+class Favorite(db.Model):
+    """A second connection from users to books, but this simply marks a book as a user's favorite"""
+
+    __tablename__ = "favorites"
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="cascade"), primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete="cascade"), primary_key=True)
+
