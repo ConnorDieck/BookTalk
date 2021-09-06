@@ -31,7 +31,7 @@ class User(db.Model):
     # Map to clubs through membership. You can see which clubs a user is a part of, and which users are in which clubs
     clubs = db.relationship('Club', secondary="memberships", backref="users")
     # Map directly to memberships (important to view join date)
-    membership = db.relationship('Membership', backref="users", cascade="all, delete-orphan")
+    memberships = db.relationship('Membership', backref="users", cascade="all, delete-orphan")
 
     # Map to books if added to favorites table
     favorites = db.relationship('Book', secondary="favorites", backref="users_favorites")
@@ -160,8 +160,8 @@ class Membership(db.Model):
     club_id = db.Column(db.Integer, db.ForeignKey('clubs.id', ondelete="cascade"), primary_key=True)
 
     join_date = db.Column(db.Date)
-    admin = db.Column(db.Boolean)
-    moderator = db.Column(db.Boolean)
+    admin = db.Column(db.Boolean, default=False)
+    moderator = db.Column(db.Boolean, default=False)
 
 
 

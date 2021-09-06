@@ -247,6 +247,9 @@ def show_club_page(club_id):
 
     # If user is in the club, they will see a more detailed club page
     if g.user in club.users:
+        ########################
+        # Build shelves
+
         # Create list of club's books
         reads = []
         for book in club.books:
@@ -262,15 +265,29 @@ def show_club_page(club_id):
         # From shelved books, separate books that have been finished
         finished_ids = []
         unfinished_ids = []
+
         for read in shelved:
             if read.complete:
                 finished_ids.append(read.book_id)
             else:
                 unfinished_ids.append(read.book_id)
+
         finished = Book.query.filter(Book.id.in_(finished_ids)).all()
         unfinished = Book.query.filter(Book.id.in_(unfinished_ids)).all()
 
-        return render_template("clubs/member-details.html", club=club, unfinished=unfinished, finished=finished)
+        ########################
+        # Designate admins and moderators
+
+        admin = Membership.query.filter(Membership.admin == True, Membership.club_id == club.id).first()
+        mod_memberships = Membership.query.filter(Membership.moderator == True, Membership.club_id == club.id).all()
+        mm_ids = []
+        for membership in mod_memberships:
+            mm_ids.append(membership.user_id)
+        mods = User.query.filter(User.id.in_(mm_ids)).all()
+
+        # pdb.set_trace()
+
+        return render_template("clubs/member-details.html", club=club, unfinished=unfinished, finished=finished, admin=admin, mods=mods)
 
     else:
         return render_template("clubs/general-details.html", club=club)
