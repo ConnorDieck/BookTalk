@@ -10,7 +10,7 @@
     {% for book in club.books %}
         {% for read in book.reads %}
             {% if read.current %}
-                <div class="card curr-read" style="width: 18rem">
+                <div class="card text-center curr-read" style="width: 18rem">
                     <a href="/books/{{ book.id }}">
                         <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
                     </a>
@@ -21,7 +21,9 @@
                                 </a>
                             </h5>
                         </div>
-                    <button class="btn btn-success" id="finish-book">Mark as Finished</button>
+                    <form action="/clubs/{{ club.id }}/{{ book.id }}/toggle_complete" method="post">
+                        <button class="btn btn-success ml-2" id="finish-book">Mark as Finished</button>
+                    </form>
                 </div>
             {% endif %}
         {% endfor %}
@@ -49,6 +51,33 @@
  <h3>Shelves:</h3>
 
  <div class="shelf">
+    <h4>To Read:</h4>
+        {% if unfinished|length >= 1 %}
+            <div class="row shelf-unfinished">
+                {% for book in unfinished %}
+                    <div class="col-sm-6">
+                        <div class="card book-unfinished" style="width: 15rem">
+                            <a href="/books/{{ book.id }}">
+                                <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title curr-title">
+                                    <a href="/books/{{ book.id }}">
+                                        {{ book.title }}
+                                    </a>
+                                </h5>
+                                <form action="/clubs/{{ club.id }}/{{ book.id }}/toggle_current" method="post">
+                                    <button class="btn btn-success ml-2" id="finish-book">Mark as Current</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% else %}
+                <div>No books added yet!</div>
+        {% endif %}
+
     <h4>Finished:</h4>
         {% if finished|length >= 1 %}
             <div class="row shelf-finished">
@@ -71,35 +100,17 @@
             {% else %}
                 <div>No books finished yet!</div>
         {% endif %}
-    <h4>To Read:</h4>
-        {% if unfinished|length >= 1 %}
-            <div class="row shelf-unfinished">
-                {% for book in unfinished %}
-                    <div class="col-sm-6">
-                        <div class="card book-unfinished" style="width: 15rem">
-                            <a href="/books/{{ book.id }}">
-                                <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
-                            </a>
-                            <div class="card-body">
-                                <h5 class="card-title curr-title">
-                                    <a href="/books/{{ book.id }}">
-                                        {{ book.title }}
-                                    </a>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-            {% else %}
-                <div>No books added yet!</div>
-        {% endif %}
+
  </div>
  
- <form method="POST" action="/clubs/{{ club.id }}/delete" class="form-inline">
-    <button class="btn btn-outline-danger ml-2">Delete Club</button>
-</form>
-
+ <div class="footer">
+    <form method="POST" action="/clubs/{{ club.id }}/leave" class="form-inline">
+        <button class="btn btn-danger ml-2">Leave Club</button>
+    </form>
+     <form method="POST" action="/clubs/{{ club.id }}/delete" class="form-inline">
+        <button class="btn btn-outline-danger ml-2">Delete Club</button>
+    </form>
+ </div>
 
 
 {% endblock %}

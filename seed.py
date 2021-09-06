@@ -13,18 +13,15 @@ db.create_all()
 User.query.delete()
 
 # Add Users
-whiskey = User.register(username='Whiskey', bio="loves cocktail books", pwd="oldfashioned", first="Jack", last="Daniels", image="/static/images/jack_daniels.jpeg", email="whiskey@test.com")
+yoshi = User.register(username='Yoshi', bio="yoshi!", pwd="egg", first="Yoshi", last="Satoshi", image="/static/images/yoshi.png", email="yoshi@test.com")
 bowser = User.register(username='Bowser', bio="reads Princess Peach catalogues", pwd="ihatemario", first="Bowser", last="Koopa", image="/static/images/bowser.png", email="bowser@test.com")
 spike = User.register(username='Spike', bio="would like to read more", pwd="ouch", first="Spikey", last="Spike", image="/static/images/spike.png", email="spike@test.com")
 mario = User.register(username='Mario', bio="mama mía", pwd="superstar", first="Mario", last="Mario", image="/static/images/mario.png", email="jumpman@test.com")
 luigi = User.register(username='Luigi', bio="m-m-m-maaariooo??", pwd="daisy", first="Luigi", last="Mario", image="/static/images/luigi.png", email="imscared@test.com")
+peach = User.register(username='Peach', bio="love me some self help books. 'How not to be kidnapped' is a favorite of mine!", pwd="peachers", first="Peach", last="Toadstool", image="/static/images/peach.png", email="ppeach@test.com")
 
 # Add new objects to session, so they'll persist
-db.session.add(whiskey)
-db.session.add(bowser)
-db.session.add(spike)
-db.session.add(mario)
-db.session.add(luigi)
+db.session.add_all([mario, luigi, peach, yoshi, bowser, spike])
 
 # Commit--otherwise, this never gets saved!
 db.session.commit()
@@ -67,11 +64,12 @@ db.session.commit()
 
 #### Relationships ####
 
-u1 = User.query.filter_by(username="Whiskey").first()
-u2 = User.query.filter_by(username="Bowser").first()
-u3 = User.query.filter_by(username="Spike").first()
-u4 = User.query.filter_by(username="Mario").first()
-u5 = User.query.filter_by(username="Luigi").first()
+u1 = User.query.filter_by(username="Mario").first()
+u2 = User.query.filter_by(username="Luigi").first()
+u3 = User.query.filter_by(username="Yoshi").first()
+u4 = User.query.filter_by(username="Peach").first()
+u5 = User.query.filter_by(username="Bowser").first()
+u6 = User.query.filter_by(username="Spike").first()
 
 c1 = Club.query.filter_by(name="Potter Fan Club").first()
 c2 = Club.query.filter_by(name="The Hobbits").first()
@@ -95,22 +93,28 @@ b9 = Book.query.filter_by(title="The Silent Patient").first()
 # If table isn't empty, empty it
 Membership.query.delete()
 
-u1.clubs.append(c1)
-u1.clubs.append(c2)
-u1.clubs.append(c5)
+# Mario runs the Harry Potter fan club, Luigi and Peach are moderators
+m1 = Membership(user_id=u1.id, club_id=c1.id, join_date='5/6/21', admin=True, moderator=False)
+m2 = Membership(user_id=u2.id, club_id=c1.id, join_date='5/6/21', admin=False, moderator=True)
+m3 = Membership(user_id=u4.id, club_id=c1.id, join_date='5/6/21', admin=False, moderator=True)
 
-u2.clubs.append(c1)
-u2.clubs.append(c4)
+# Bowser runs the LOTR fan club, doesn't let anyone else run it
+m4 = Membership(user_id=u5.id, club_id=c2.id, join_date='5/6/21', admin=True, moderator=False)
 
-u3.clubs.append(c1)
-u3.clubs.append(c2)
+# Yoshi runs the Radiants fan club, Luigi and Spike are moderators
+m7 = Membership(user_id=u6.id, club_id=c3.id, join_date='5/6/21', admin=False, moderator=True)
+m6 = Membership(user_id=u2.id, club_id=c3.id, join_date='5/6/21', admin=False, moderator=True)
+m5 = Membership(user_id=u3.id, club_id=c3.id, join_date='5/6/21', admin=True, moderator=False)
 
-u4.clubs.append(c3)
-u4.clubs.append(c4)
-u4.clubs.append(c5)
+# Peach runs both the Mystery fans and Nonfiction Nerds. No moderators on either, but everyone else is a member of both clubs because they want to hang out with her
+m8 = Membership(user_id=u4.id, club_id=c4.id, join_date='5/6/21', admin=True, moderator=False)
+m9 = Membership(user_id=u4.id, club_id=c5.id, join_date='5/6/21', admin=True, moderator=False)
 
-u5.clubs.append(c3)
-u5.clubs.append(c4)
+c4.users.extend([u1, u2, u3, u5, u6])
+c5.users.extend([u1, u2, u3, u5, u6])
+
+db.session.add_all([m1, m2, m3, m4, m5, m6, m7, m8, m9])
+db.session.commit()
 
 ### Meetings ###
 
@@ -194,6 +198,8 @@ f1 = Favorite(user_id=u1.id, book_id=b1.id)
 f2 = Favorite(user_id=u2.id, book_id=b2.id)
 u3.favorites.append(b3)
 u4.favorites.append(b4)
+u5.favorites.append(b5)
+u6.favorites.append(b5)
 
 db.session.add_all([f1, f2])
 db.session.commit()

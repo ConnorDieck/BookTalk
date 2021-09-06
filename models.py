@@ -133,21 +133,9 @@ class Note(db.Model):
 
 
 
+
 ###########################################################################
 # Relationship models:
-
-
-
-class Membership(db.Model):
-    """Membership model, maps users to clubs"""
-
-    __tablename__ = "memberships"
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="cascade"), primary_key=True)
-    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id', ondelete="cascade"), primary_key=True)
-
-    join_date = db.Column(db.Date)
-
 
 
 class Read(db.Model):
@@ -160,6 +148,20 @@ class Read(db.Model):
 
     current = db.Column(db.Boolean)
     complete = db.Column(db.Boolean)
+
+
+
+class Membership(db.Model):
+    """Membership model, maps users to clubs"""
+
+    __tablename__ = "memberships"
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="cascade"), primary_key=True)
+    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id', ondelete="cascade"), primary_key=True)
+
+    join_date = db.Column(db.Date)
+    admin = db.Column(db.Boolean)
+    moderator = db.Column(db.Boolean)
 
 
 

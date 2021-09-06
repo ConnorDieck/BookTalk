@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} Details{% endblock %}
+
+{% block content %}
+
+<h1 class="header">{{ book.title }} </h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, msg in messages %}
+            <p class="{{ category }}">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="container book-container">
+    <img src="{{ book.image }}" alt="{{ book.title }} cover photo" id="cover-photo">
+</div>
+
+<ul>
+    <li>Title: {{ book.title }}</li>
+    <li>Author: {{ book.author }}</li>
+    <li>Publishing Date: {{ book.publish_date }}</li>
+    <li>Number of pages: {{ book.num_pages }}</li>
+</ul>
+
+<div class="footer">
+    {% if book not in g.user.favorites %}
+        <form method="POST" action="/books/{{ book.id }}/favorite" class="form-inline">
+            <button class="btn btn-outline-success ml-2">Add to Favorites</button>
+        </form>
+    {% else %}
+        <form method="POST" action="/books/{{ book.id }}/remove_favorite" class="form-inline">
+            <button class="btn btn-outline-danger ml-2">Remove from Favorites</button>
+        </form>
+    {% endif %}
+</div>
+
+{% endblock %}

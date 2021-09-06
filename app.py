@@ -149,39 +149,39 @@ def user_details(user_id):
 def edit_user(user_id):
     """Generates and handles submission of user edit form"""
 
-    user = User.query.get_or_404(user_id)
-
-    if not g.user or user is not g.user:
+    if not g.user:
         flash("In order to edit a profile, you must sign into that profile.", "text-danger")
         return redirect("/")
 
     form = EditUserForm()
+
     if form.validate_on_submit():
+        user = User.authenticate(g.user.username, form.password.data)
+        if user:
 
-        username = form.username.data
-        email = form.email.data
-        image = form.image.data
-        first_name = form.first_name.data
-        last_name = form.last_name.data
-        bio = form.bio.data
+            user.username = form.username.data
+            user.email = form.email.data
+            user.image = form.image.data
+            user.first_name = form.first_name.data
+            user.last_name = form.last_name.data
+            user.bio = form.bio.data
 
-        user.username = username
-        user.email = email
-        user.image = image
-        user.first_name = first_name
-        user.last_name = last_name
-        user.bio = bio
+            try:
+                db.session.commit()
 
-        try:
-            db.session.commit()
-        except IntegrityError:
-            form.username.errors.append('Sorry, this username is already taken. Please choose another')
-            return render_template('users/edit.html', form=form)
-
-        return redirect (f"/users/{user.id}")
+            except IntegrityError:
+                db.session.rollback()
+                form.username.errors.append('Sorry, this username is already taken. Please choose another')
+                return render_template('users/edit.html', form=form)
+            
+            flash("Successfully updated user information.", "text-success")
+            return redirect (f"/users/{user.id}")
+        else:
+            flash("The password you entered was not correct.", "text-danger")
+            return redirect ("/")
     
     else:
-        return render_template('users/edit.html', form=form, user=user)
+        return render_template('users/edit.html', form=form)
 
 @app.route("/users/<int:user_id>/delete", methods=["POST"])
 def delete_user(user_id):
@@ -308,13 +308,13 @@ def delete_club(club_id):
     """Deletes a member to delete a club he or she is a part of"""
 
     if not g.user:
-        flash("In order to edit a profile, you must sign into that profile.", "text-danger")
+        flash("In order to delete a profile, you must signed in under that profile.", "text-danger")
         return redirect("/")
 
     club = db.session.query(Club).get_or_404(club_id)
 
     if g.user not in club.users:
-        flash("You can't delete a club that you're not a part of.", "danger")
+        flash("You can't delete a club that you're not a part of.", "text-danger")
         return redirect("/clubs")
     
     db.session.delete(club)
@@ -333,10 +333,174 @@ def join_club(club_id):
     club = db.session.query(Club).get_or_404(club_id)
 
     if g.user in club.users:
-        flash("You're already part of this club.'", "danger")
+        flash("You're already part of this club.'", "text-danger")
         return redirect(f"/clubs/{club_id}")
     
     g.user.clubs.append(club)
     db.session.commit()
 
     return redirect(f"/clubs/{club_id}")
+
+@app.route("/clubs/<int:club_id>/leave", methods=["POST"])
+def leave_club(club_id):
+    """Leave a club"""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+
+    club = db.session.query(Club).get_or_404(club_id)
+
+    if g.user not in club.users:
+        flash("You're not a member of this club.'", "text-danger")
+        return redirect(f"/clubs/{club_id}")
+
+    g.user.clubs.remove(club)
+    db.session.commit()
+
+    return redirect(f"/clubs/{club_id}")
+
+@app.route("/clubs/<int:club_id>/<int:book_id>/toggle_current", methods=["POST"])
+def toggle_current(club_id, book_id):
+    """Marks a current book as not current and a not current book as current"""
+
+    # TO DO: Revise this function so that only the creator of the club can alter the current book
+
+    club = db.session.query(Club).get_or_404(club_id)
+
+    if not g.user or g.user not in club.users:
+        flash("You must be signed in as a member of that club in order to view that page.", "text-danger")
+        return redirect("/")
+
+    try:
+        read = db.session.query(Read).filter(Read.book_id == book_id, Read.club_id == club_id).first()
+    except:
+        flash(f"This club is not reading the selected book.")
+        return redirect("/")
+
+    # Find the club's read which matches the requested book id. If current, mark not; if not current, mark as current and mark the other current book as not current.
+    if read.current:
+        read.current = False
+        db.session.commit()
+
+        flash(f"Marked as not current", "text-success")
+        return redirect(f"/clubs/{club_id}")
+
+    else: 
+        for curr_read in club.reads:
+            if curr_read.current:
+                curr_read.current = False
+
+        read.current = True
+        db.session.commit()
+        
+        flash(f"Marked as current", "text-success")
+        return redirect(f"/clubs/{club_id}")
+
+@app.route("/clubs/<int:club_id>/<int:book_id>/toggle_complete", methods=["POST"])
+def toggle_complete(club_id, book_id):
+    """Marks an incomplete book as complete or reset a completed book to read again"""
+
+    club = db.session.query(Club).get_or_404(club_id)
+
+    # TO DO: Revise this function so that only the creator of the club can alter the completed book
+
+    if not g.user or g.user not in club.users:
+        flash("You must be signed in as a member of that club in order to view that page.", "text-danger")
+        return redirect("/")
+
+    try:
+        read = db.session.query(Read).filter(Read.book_id == book_id, Read.club_id == club_id).first()
+    except:
+        flash(f"This club is not reading the selected book.")
+        return redirect("/")
+    
+    if read.complete:
+        read.complete = False
+        db.session.commit()
+
+        flash(f"Marked as not completed", "text-success")
+        return redirect(f"/clubs/{club_id}")
+    
+    else:
+        read.complete = True
+        db.session.commit()
+
+        flash(f"Marked as finished!", "text-success")
+        return redirect(f"/clubs/{club_id}")
+
+
+
+
+############################################################################
+# Book routes
+
+@app.route("/books")
+def show_books():
+    """Shows list of books in BookTalk's database."""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+
+    books = Book.query.all()
+
+    return render_template("books/list.html", books=books)
+
+@app.route("/books/<int:book_id>")
+def book_details(book_id):
+    """Shows details for a given book"""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+
+    # TO DO: Build transform function in order to pull this information from the API
+    book = Book.query.get_or_404(book_id)
+
+    return render_template("books/details.html", book=book)
+
+@app.route("/books/<int:book_id>/favorite", methods=["POST"])
+def add_favorite(book_id):
+    """Add book to user.favorites"""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+
+    # TO DO: Build transform function in order to pull this information from the API
+    book = Book.query.get_or_404(book_id)
+
+    if book in g.user.favorites:
+        flash("That book is already in your favorites.", "text-danger")
+        return redirect("/")
+
+    else:
+        g.user.favorites.append(book)
+        db.session.commit()
+
+        flash(f"Added {book.title} to your favorite books!", "text-success")
+        return redirect("/")
+
+@app.route("/books/<int:book_id>/remove_favorite", methods=["POST"])
+def remove_favorite(book_id):
+    """Remove book from user.favorites"""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+
+    # TO DO: Build transform function in order to pull this information from the API
+    book = Book.query.get_or_404(book_id)
+
+    if book not in g.user.favorites:
+        flash("That book isn't in your favorites.", "text-danger")
+        return redirect("/")
+
+    else:
+        g.user.favorites.remove(book)
+        db.session.commit()
+
+        flash(f"Removed {book.title} from your favorite books.", "text-success")
+        return redirect("/")
+
