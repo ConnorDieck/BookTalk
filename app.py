@@ -2,6 +2,7 @@ from flask import Flask, request, redirect, render_template, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from werkzeug.exceptions import Unauthorized
 from sqlalchemy.exc import IntegrityError
+from datetime import date
 
 from models import db, connect_db, User, Book, Club, Membership, Read, Note, Meeting, Favorite
 from forms import LoginForm, RegisterForm, NotesForm, DeleteForm, EditUserForm, ClubForm
@@ -306,14 +307,24 @@ def create_club():
         name = form.name.data
         club = Club(name=name)
 
+        # Try to create the club, return error if name is taken
         try:
             db.session.add(club)
             db.session.commit()
         except IntegrityError:
+            db.session.rollback()
             form.name.errors.append('Sorry, this club name is already taken. Please choose another')
             return render_template('clubs/new.html', form=form)
         
         c = Club.query.filter(Club.name==name).first()
+
+        # Capture the date for the join_date
+        today = date.today()
+        join_date = today.strftime("%m/%d/%y")
+        # Give club creator admin privileges
+        membership = Membership(user_id=g.user.id, club_id=c.id, join_date=join_date, admin=True, moderator=False)
+        db.session.add(membership)
+        db.session.commit()
 
         return redirect (f"/clubs/{c.id}")
     
