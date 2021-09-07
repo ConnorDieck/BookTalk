@@ -6,6 +6,14 @@
 
 <h1>{{ club.name }}</h1>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, msg in messages %}
+            <p class="{{ category }}">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
 <h3>Currently reading:                     
     {% for book in club.books %}
         {% for read in book.reads %}
@@ -64,13 +72,21 @@
  <ul class="members-list">
     {% for user in club.users %}
         {% if user.id != admin.user_id and user not in mods %}
-            <li><a href="/users/{{ user.id }}">{{ user.username }}</a></li>
+            <li>
+                <a href="/users/{{ user.id }}">{{ user.username }}</a>
+                {% if g.user.id == admin.user_id %}
+                    <form action="/clubs/{{ club.id }}/{{ user.id }}/add_moderator" method="post" class="form-inline col">
+                        <button class="btn btn-outline-success">Make Moderator</button>
+                    </form>
+                {% endif %}
+            </li>
         {% endif %}
     {% endfor %}
  </ul>
- 
 
- <a href="/books/add" class="btn btn-success">Add a new book!</a>
+ {% if g.user.id == admin.id or g.user in mods %}
+    <a href="/books/add" class="btn btn-success">Add a new book!</a>
+{% endif %}
 
 
  <h3>Shelves:</h3>

@@ -374,6 +374,7 @@ def join_club(club_id):
 
     return redirect(f"/clubs/{club_id}")
 
+
 @app.route("/clubs/<int:club_id>/leave", methods=["POST"])
 def leave_club(club_id):
     """Leave a club"""
@@ -392,6 +393,35 @@ def leave_club(club_id):
     db.session.commit()
 
     return redirect(f"/clubs/{club_id}")
+
+
+@app.route("/clubs/<int:club_id>/<int:user_id>/add_moderator", methods=["POST"])
+def add_moderator(club_id, user_id):
+    """Allow club admin to add a moderator"""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+        
+    admin = Membership.query.filter(Membership.user_id == g.user.id, Membership.club_id == club_id).first()
+    is_admin = admin.admin
+
+    if is_admin:
+        membership = Membership.query.filter(Membership.user_id == user_id, Membership.club_id == club_id).first()
+
+        
+
+        membership.moderator = True
+        db.session.commit()
+
+        user = User.query.filter(User.id == user_id).first()
+        flash(f"Promoted {user.username} to Moderator!")
+        return redirect(f"/clubs/{club_id}")
+
+    else:
+        flash(f"Admin status required.", "text-danger")
+        return redirect(f"/clubs/{club_id}")
+
 
 @app.route("/clubs/<int:club_id>/<int:book_id>/toggle_current", methods=["POST"])
 def toggle_current(club_id, book_id):
@@ -430,6 +460,7 @@ def toggle_current(club_id, book_id):
         flash(f"Marked as current", "text-success")
         return redirect(f"/clubs/{club_id}")
 
+
 @app.route("/clubs/<int:club_id>/<int:book_id>/toggle_complete", methods=["POST"])
 def toggle_complete(club_id, book_id):
     """Marks an incomplete book as complete or reset a completed book to read again"""
@@ -457,10 +488,13 @@ def toggle_complete(club_id, book_id):
     
     else:
         read.complete = True
+        read.current = False
         db.session.commit()
 
         flash(f"Marked as finished!", "text-success")
         return redirect(f"/clubs/{club_id}")
+
+
 
 
 
