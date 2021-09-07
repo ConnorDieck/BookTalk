@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h1>What's the talk on BookTalk?</h1>
+<h1>My Books</h1>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -13,8 +13,6 @@
         {% endfor %}
     {% endif %}
 {% endwith %}
-
-<a href="/books/add" class="btn btn-success">Add a new book!</a>
 
 <div class="row">
     
@@ -27,6 +25,15 @@
                 <h5 class="card-title">{{ book.title }}</h5>
                 
                 <a href="/books/{{ book.id }}" class="btn btn-primary">Details</a>
+                {% if book not in g.user.favorites %}
+                    <form method="POST" action="/books/{{ book.id }}/favorite" class="form-inline">
+                        <button class="btn btn-outline-success ml-2">Add to Favorites</button>
+                    </form>
+                {% else %}
+                    <form method="POST" action="/books/{{ book.id }}/remove_favorite" class="form-inline">
+                        <button class="btn btn-outline-danger ml-2">Remove from Favorites</button>
+                    </form>
+                {% endif %}
             </div>
         </div>
     {% endfor %}
