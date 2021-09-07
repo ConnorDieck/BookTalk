@@ -523,14 +523,14 @@ def add_favorite(book_id):
 
     if book in g.user.favorites:
         flash("That book is already in your favorites.", "text-danger")
-        return redirect("/")
+        return redirect("/books")
 
     else:
         g.user.favorites.append(book)
         db.session.commit()
 
         flash(f"Added {book.title} to your favorite books!", "text-success")
-        return redirect("/")
+        return redirect("/books")
 
 @app.route("/books/<int:book_id>/remove_favorite", methods=["POST"])
 def remove_favorite(book_id):

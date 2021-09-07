@@ -24,16 +24,20 @@
 
                 <h5 class="card-title">{{ book.title }}</h5>
                 
-                <a href="/books/{{ book.id }}" class="btn btn-primary">Details</a>
-                {% if book not in g.user.favorites %}
-                    <form method="POST" action="/books/{{ book.id }}/favorite" class="form-inline">
-                        <button class="btn btn-outline-success ml-2">Add to Favorites</button>
-                    </form>
-                {% else %}
-                    <form method="POST" action="/books/{{ book.id }}/remove_favorite" class="form-inline">
-                        <button class="btn btn-outline-danger ml-2">Remove from Favorites</button>
-                    </form>
-                {% endif %}
+                <div class="container">
+                    <div class="row">
+                        <a href="/books/{{ book.id }}" class="btn btn-primary col">Details</a>
+                        {% if book not in g.user.favorites %}
+                            <form method="POST" action="/books/{{ book.id }}/favorite" class="form-inline col">
+                                <button class="btn btn-outline-success">Favorite</button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="/books/{{ book.id }}/remove_favorite" class="form-inline col">
+                                <button class="btn btn-outline-danger">Unfavorite</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     {% endfor %}
