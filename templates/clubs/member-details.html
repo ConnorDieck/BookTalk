@@ -21,14 +21,29 @@
                                 </a>
                             </h5>
                         </div>
-                    <form action="/clubs/{{ club.id }}/{{ book.id }}/toggle_complete" method="post">
-                        <button class="btn btn-success ml-2" id="finish-book">Mark as Finished</button>
-                    </form>
+                    {% if g.user.id == admin.id or g.user in mods %}
+                        <form action="/clubs/{{ club.id }}/{{ book.id }}/toggle_complete" method="post">
+                            <button class="btn btn-success ml-2" id="finish-book">Mark as Finished</button>
+                        </form>
+                    {% endif %}
                 </div>
             {% endif %}
         {% endfor %}
     {% endfor %}
 </h3>
+
+
+<h3>Meetings:</h3>
+<div class="row">
+   {% for meeting in club.meetings %}
+       <div class="meeting-tile">
+           <a href="/clubs/meetings/{{ meeting.id }}">
+               {{ meeting.date }}
+           </a>
+       </div>
+   {% endfor %}
+</div>
+
 
  <h3>BookTalkers in {{ club.name }}:</h3>
  <h5>Admin:</h5>
@@ -54,16 +69,6 @@
     {% endfor %}
  </ul>
 
- <h3>Meetings:</h3>
- <div class="row">
-    {% for meeting in club.meetings %}
-        <div class="meeting-tile">
-            <a href="/clubs/meetings/{{ meeting.id }}">
-                {{ meeting.date }}
-            </a>
-        </div>
-    {% endfor %}
- </div>
 
  <h3>Shelves:</h3>
 
@@ -124,9 +129,11 @@
     <form method="POST" action="/clubs/{{ club.id }}/leave" class="form-inline">
         <button class="btn btn-danger ml-2">Leave Club</button>
     </form>
-     <form method="POST" action="/clubs/{{ club.id }}/delete" class="form-inline">
-        <button class="btn btn-outline-danger ml-2">Delete Club</button>
-    </form>
+    {% if g.user.id == admin.id %}
+        <form method="POST" action="/clubs/{{ club.id }}/delete" class="form-inline">
+            <button class="btn btn-outline-danger ml-2">Delete Club</button>
+        </form>
+    {% endif %}
  </div>
 
 

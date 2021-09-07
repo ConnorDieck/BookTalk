@@ -33,6 +33,8 @@ class User(db.Model):
     # Map directly to memberships (important to view join date)
     memberships = db.relationship('Membership', backref="users", cascade="all, delete-orphan")
 
+    # # Map to books a user is exposed to through clubs
+    # books = db.relationship('Book', secondary="reads", backref="users")
     # Map to books if added to favorites table
     favorites = db.relationship('Book', secondary="favorites", backref="users_favorites")
 
@@ -73,7 +75,7 @@ class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.Text, nullable=False)
     author = db.Column(db.String(), nullable=False)
-    image = db.Column(db.Text)
+    image = db.Column(db.Text, default="/static/images/placeholder.png")
     num_pages = db.Column(db.Integer, nullable=False)
     publish_date = db.Column(db.Text, nullable=False)
 

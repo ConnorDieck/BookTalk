@@ -6,6 +6,13 @@
 
 <h1 class="header">BookTalkers:</h1>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, msg in messages %}
+            <p class="{{ category }}">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 <div class="row">
         {% for user in users %}

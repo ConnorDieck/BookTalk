@@ -339,16 +339,21 @@ def delete_club(club_id):
         flash("In order to delete a profile, you must signed in under that profile.", "text-danger")
         return redirect("/")
 
-    club = db.session.query(Club).get_or_404(club_id)
-
-    if g.user not in club.users:
+    try:
+        membership = db.session.query(Membership).filter(Membership.user_id==g.user.id, Membership.club_id==club_id).first()
+    except:
         flash("You can't delete a club that you're not a part of.", "text-danger")
         return redirect("/clubs")
-    
-    db.session.delete(club)
-    db.session.commit()
 
-    return redirect("/clubs")
+    if membership.admin:
+        db.session.delete(club)
+        db.session.commit()
+
+        return redirect("/clubs")
+    else:
+        flash("Permission reserved for admin.", "text-danger")
+        return redirect("/clubs")
+    
 
 @app.route("/clubs/<int:club_id>/join", methods=["POST"])
 def join_club(club_id):
@@ -471,7 +476,24 @@ def show_books():
         flash("You must be signed in in order to view that page.", "text-danger")
         return redirect("/")
 
-    books = Book.query.all()
+    # CODE REVIEW QUESTION: Is there a cleaner way to do the following query? In SQL, we're running 4 JOINs:
+    # SELECT books.id FROM books                                           
+    # JOIN reads                                                                      
+    # ON books.id = reads.book_id                                                     
+    # JOIN clubs                                                                      
+    # ON reads.club_id = clubs.id                                                     
+    # JOIN memberships                                                                
+    # ON clubs.id = memberships.club_id
+    # JOIN users
+    # ON memberships.user_id = users.id
+    # WHERE users.id = 2;
+
+    # Get books that are read by clubs which the user is a member of
+    user_memberships = db.session.query(Membership).filter_by(user_id=g.user.id).all()
+    user_club_ids = [membership.club_id for membership in user_memberships]
+    user_club_reads = db.session.query(Read).filter(Read.club_id.in_(user_club_ids)).all()
+    user_book_ids = [read.book_id for read in user_club_reads]
+    books = Book.query.filter(Book.id.in_(user_book_ids)).all()
 
     return render_template("books/list.html", books=books)
 
