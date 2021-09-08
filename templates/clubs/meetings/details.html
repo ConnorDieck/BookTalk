@@ -19,25 +19,37 @@
 <p>We'll be meeting on {{meeting.date}} to discuss {{meeting.topic}}. Please join by clicking the link below!</p>
 
 <a href="{{meeting.url}}" class="btn btn-success">Join Meeting</a>
-
-<h4>Notes for the meeting:</h4>
-
-<div class="row">
-    {% for user in club.users %}
-        {% for note in user.notes %}
-            {% if note.meeting_id == meeting.id %}
-                <div class="card note-card" style="width: 18rem">
-                    <div class="card-body">
-                        <h5 class="card-title">{{user.username}} Note</h5>
-                        <p class="card-text"> {{note.text}} </p>
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-    {% endfor %}
+ 
 </div>
 
- 
+<div class="notes">
+    <h4>Notes for the meeting:</h4>
+
+    <div class="row">
+        {% for user in club.users %}
+            {% for note in user.notes %}
+                {% if note.meeting_id == meeting.id %}
+                    <div class="card note-card" style="width: 18rem">
+                        <div class="card-body">
+                            <h5 class="card-title">{{user.username}} Note</h5>
+                            <p class="card-text"> {{note.text}} </p>
+                            {% if g.user.id == user.id %}
+                                <a href="/clubs/{{ club.id }}/meetings/{{ meeting.id }}/notes/edit" class="btn btn-info">
+                                    Edit
+                                </a>
+                                <form action="/clubs/{{ club.id }}/meetings/{{ meeting.id }}/notes/delete" method="post">
+                                    <button class="btn btn-outline-danger ml-2" id="finish-book">Mark as Finished</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <a href="/clubs/{{ club.id }}/meetings/{{ meeting.id }}/notes/add" class="btn btn-success">Add Note</a>
+
 </div>
 
 
