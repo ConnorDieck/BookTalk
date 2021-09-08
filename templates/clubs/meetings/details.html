@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h1>Meeting Details</h1>
+<h1>{{ meeting.date }} Meeting Details</h1>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -16,13 +16,9 @@
 
 <div class="meeting">
     
-<h3>
-    Meeting on {{ meeting.date }}
-</h3>
+<p>We'll be meeting on {{meeting.date}} to discuss {{meeting.topic}}. Please join by clicking the link below!</p>
 
-<h4>
-    Discussing {{ meeting.topic }}
-</h4>
+<a href="{{meeting.url}}" class="btn btn-success">Join Meeting</a>
 
 <h4>Notes for the meeting:</h4>
 
