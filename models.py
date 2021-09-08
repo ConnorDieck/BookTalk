@@ -114,6 +114,7 @@ class Meeting(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     date = db.Column(db.String, nullable=False)
+    topic = db.Column(db.String, nullable=False)
     club_id = db.Column(db.Integer, db.ForeignKey('clubs.id', ondelete="cascade"))
     
     # Map meeting to related notes
