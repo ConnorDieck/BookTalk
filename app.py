@@ -367,8 +367,15 @@ def join_club(club_id):
         flash("You're already part of this club.'", "text-danger")
         return redirect(f"/clubs/{club_id}")
     
-    g.user.clubs.append(club)
-    db.session.commit()
+    # If the club is empty, the user joining automatically becomes the moderator
+    if len(club.users) == 0:
+        m = Membership(user_id=g.user.id, club_id=club_id, admin=True)
+        db.session.add(m)
+        db.session.commit()
+    else:
+        m = Membership(user_id=g.user.id, club_id=club_id)
+        db.session.add(m)
+        db.session.commit()
 
     return redirect(f"/clubs/{club_id}")
 
