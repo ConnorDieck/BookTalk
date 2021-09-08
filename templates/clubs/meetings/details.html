@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ club.name }} Meetings{% endblock %}
+
+{% block content %}
+
+<h1>Meeting Details</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, msg in messages %}
+            <p class="{{ category }}">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="meeting">
+    
+<h3>
+    Meeting on {{ meeting.date }}
+</h3>
+
+<h4>
+    Discussing {{ meeting.topic }}
+</h4>
+
+<h4>Notes for the meeting:</h4>
+
+<div class="row">
+    {% for user in club.users %}
+        {% for note in user.notes %}
+            {% if note.meeting_id == meeting.id %}
+                <div class="card note-card" style="width: 18rem">
+                    <div class="card-body">
+                        <h5 class="card-title">{{user.username}} Note</h5>
+                        <p class="card-text"> {{note.text}} </p>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</div>
+
+ 
+</div>
+
+
+{% endblock %}

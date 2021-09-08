@@ -286,8 +286,6 @@ def show_club_page(club_id):
             mm_ids.append(membership.user_id)
         mods = User.query.filter(User.id.in_(mm_ids)).all()
 
-        # pdb.set_trace()
-
         return render_template("clubs/member-details.html", club=club, unfinished=unfinished, finished=finished, admin=admin, mods=mods)
 
     else:
@@ -395,7 +393,7 @@ def leave_club(club_id):
     return redirect(f"/clubs/{club_id}")
 
 
-@app.route("/clubs/<int:club_id>/<int:user_id>/add_moderator", methods=["POST"])
+@app.route("/clubs/<int:club_id>/<int:user_id>/toggle_moderator", methods=["POST"])
 def add_moderator(club_id, user_id):
     """Allow club admin to add a moderator"""
 
@@ -408,15 +406,19 @@ def add_moderator(club_id, user_id):
 
     if is_admin:
         membership = Membership.query.filter(Membership.user_id == user_id, Membership.club_id == club_id).first()
-
-        
-
-        membership.moderator = True
-        db.session.commit()
-
         user = User.query.filter(User.id == user_id).first()
-        flash(f"Promoted {user.username} to Moderator!")
-        return redirect(f"/clubs/{club_id}")
+
+        if membership.moderator == False:
+            membership.moderator = True
+            db.session.commit()
+            flash(f"Promoted {user.username} to Moderator!", "text-success")
+            return redirect(f"/clubs/{club_id}")
+        
+        else:
+            membership.moderator = False
+            db.session.commit()
+            flash(f"Demoted { user.username } from Moderator.", "text-success")
+            return redirect(f"/clubs/{club_id}")
 
     else:
         flash(f"Admin status required.", "text-danger")
@@ -488,11 +490,42 @@ def toggle_complete(club_id, book_id):
     
     else:
         read.complete = True
-        read.current = False
+        read.current = False 
         db.session.commit()
 
         flash(f"Marked as finished!", "text-success")
         return redirect(f"/clubs/{club_id}")
+
+
+
+
+############################################################################
+# Meetings routes (clubs subroutes)
+
+@app.route("/clubs/<int:club_id>/meetings/<int:m_id>")
+def show_meetings(club_id, m_id):
+    """Generate page with all of club's meetings"""
+
+    club = db.session.query(Club).get_or_404(club_id)
+
+    if not g.user or g.user not in club.users:
+        flash("You must be signed in as a member of that club in order to view that page.", "text-danger")
+        return redirect("/")
+    
+    meeting = Meeting.query.get_or_404(m_id)
+
+    ########################
+    # Designate admins and moderators
+
+    admin = Membership.query.filter(Membership.admin == True, Membership.club_id == club.id).first()
+    mod_memberships = Membership.query.filter(Membership.moderator == True, Membership.club_id == club.id).all()
+    mm_ids = []
+    for membership in mod_memberships:
+        mm_ids.append(membership.user_id)
+    mods = User.query.filter(User.id.in_(mm_ids)).all()
+
+
+    return render_template("clubs/meetings/details.html", club=club, meeting=meeting, admin=admin, mods=mods)
 
 
 
@@ -587,4 +620,6 @@ def remove_favorite(book_id):
 
         flash(f"Removed {book.title} from your favorite books.", "text-success")
         return redirect("/")
+
+
 

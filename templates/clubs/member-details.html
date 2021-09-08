@@ -45,7 +45,7 @@
 <div class="row">
    {% for meeting in club.meetings %}
        <div class="meeting-tile">
-           <a href="/clubs/meetings/{{ meeting.id }}">
+           <a href="/clubs/{{ club.id }}/meetings/{{ meeting.id }}">
                {{ meeting.date }}
            </a>
        </div>
@@ -65,7 +65,14 @@
  <h5>Moderators:</h5>
  <ul class="mods-list">
     {% for user in mods %}
-        <li><a href="/users/{{ user.id }}">{{ user.username }}</a></li>
+        <li>
+            <a href="/users/{{ user.id }}">{{ user.username }}</a>
+            {% if g.user.id == admin.user_id %}
+                <form action="/clubs/{{ club.id }}/{{ user.id }}/toggle_moderator" method="post" class="form-inline col">
+                    <button class="btn btn-outline-danger">Demote</button>
+                </form>
+            {% endif %}
+        </li>
     {% endfor %}
  </ul>
  <h5>Other members:</h5>
@@ -75,7 +82,7 @@
             <li>
                 <a href="/users/{{ user.id }}">{{ user.username }}</a>
                 {% if g.user.id == admin.user_id %}
-                    <form action="/clubs/{{ club.id }}/{{ user.id }}/add_moderator" method="post" class="form-inline col">
+                    <form action="/clubs/{{ club.id }}/{{ user.id }}/toggle_moderator" method="post" class="form-inline col">
                         <button class="btn btn-outline-success">Make Moderator</button>
                     </form>
                 {% endif %}
