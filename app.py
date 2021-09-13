@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from datetime import date
 
 from models import db, connect_db, User, Book, Club, Membership, Read, Note, Meeting, Favorite
-from forms import LoginForm, RegisterForm, NotesForm, DeleteForm, EditUserForm, ClubForm
+from forms import LoginForm, RegisterForm, NotesForm, DeleteForm, EditUserForm, ClubForm, MeetingForm
 
 import pdb
 
@@ -334,14 +334,13 @@ def delete_club(club_id):
     """Deletes a member to delete a club he or she is a part of"""
 
     if not g.user:
-        flash("In order to delete a profile, you must signed in under that profile.", "text-danger")
+        flash("You must be signed in in order to view that page.", "text-danger")
         return redirect("/")
+        
 
-    try:
-        membership = db.session.query(Membership).filter(Membership.user_id==g.user.id, Membership.club_id==club_id).first()
-    except:
-        flash("You can't delete a club that you're not a part of.", "text-danger")
-        return redirect("/clubs")
+    club = db.session.query(Club).get_or_404(club_id)
+
+    membership = db.session.query(Membership).filter(Membership.club_id == club_id, Membership.user_id == g.user.id).first()
 
     if membership.admin:
         db.session.delete(club)
@@ -351,6 +350,10 @@ def delete_club(club_id):
     else:
         flash("Permission reserved for admin.", "text-danger")
         return redirect("/clubs")
+
+
+############################################################################
+# Membership routes (clubs subroutes)
     
 
 @app.route("/clubs/<int:club_id>/join", methods=["POST"])
@@ -430,6 +433,11 @@ def add_moderator(club_id, user_id):
     else:
         flash(f"Admin status required.", "text-danger")
         return redirect(f"/clubs/{club_id}")
+
+
+
+############################################################################
+# Reads routes (clubs subroutes)
 
 
 @app.route("/clubs/<int:club_id>/<int:book_id>/toggle_current", methods=["POST"])
@@ -534,8 +542,51 @@ def show_meetings(club_id, m_id):
 
     return render_template("clubs/meetings/details.html", club=club, meeting=meeting, admin=admin, mods=mods)
 
+@app.route("/clubs/<int:club_id>/meetings/new", methods=["GET", "POST"])
+def create_meeting(club_id):
+    """Generate and handle submission of new meeting form"""
+
+    club = db.session.query(Club).get_or_404(club_id)
+
+    membership = db.session.query(Membership).filter(Membership.club_id == club_id, Membership.user_id == g.user.id).first()
+
+    if membership.admin or membership.moderator:
+        permission = True
+    else:
+        permission = False
+
+    if not g.user or g.user not in club.users or not permission:
+        flash("You must have be an admin or moderator of that club in order to view that page.", "text-danger")
+        return redirect("/")
+
+    form = MeetingForm()
+
+    # get list of club's book titles
+    titles = [book.title for book in club.books]
+
+    # dynamically set topic choices
+    form.topic.choices = titles
+
+    if form.validate_on_submit():
+        meeting = Meeting(date = form.date.data, topic = form.topic.data, url = form.url.data, club_id = club.id)
+        db.session.add(meeting)
+        db.session.commit()
+        flash("New meeting added!")
+        return redirect(f"/clubs/{club_id}")
+
+    else:
+        return render_template("clubs/meetings/add.html", form=form)
 
 
+
+############################################################################
+# Notes routes 
+
+
+
+@app.route("/clubs/<int:club_id>/meetings/<int:m_id>/notes/add")
+def add_note(club_id, m_id):
+    """Allows user to create new note associated with a meeting"""
 
 
 

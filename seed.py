@@ -7,7 +7,7 @@ from app import app
 db.drop_all()
 db.create_all()
 
-#### Users ####
+#### Users ########################################################
 
 # If table isn't empty, empty it
 User.query.delete()
@@ -26,7 +26,7 @@ db.session.add_all([mario, luigi, peach, yoshi, bowser, spike])
 # Commit--otherwise, this never gets saved!
 db.session.commit()
 
-#### Clubs ####
+#### Clubs ########################################################
 
 # If table isn't empty, empty it
 Club.query.delete()
@@ -42,7 +42,7 @@ db.session.add_all([potter_fans, lotr_nerds, radiants, mystery_fans, nonfiction]
 db.session.commit()
 
 
-#### Books ####
+#### Books ########################################################
 
 # If table isn't empty, empty it
 Book.query.delete()
@@ -62,7 +62,7 @@ db.session.add_all([azkaban, goblet, fellowship, phoenix, hobbit, kings, radianc
 db.session.commit()
 
 
-#### Relationships ####
+#### Pull users, clubs, and books as objects from session #################################
 
 u1 = User.query.filter_by(username="Mario").first()
 u2 = User.query.filter_by(username="Luigi").first()
@@ -88,7 +88,7 @@ b8 = Book.query.filter_by(title="Man's Search for Meaning").first()
 b9 = Book.query.filter_by(title="The Silent Patient").first()
 
 
-### Memberships ###
+### Memberships #######################################################
 
 # If table isn't empty, empty it
 Membership.query.delete()
@@ -116,7 +116,7 @@ c5.users.extend([u1, u2, u4, u5, u6])
 db.session.add_all([m1, m2, m3, m4, m5, m6, m7, m8, m9])
 db.session.commit()
 
-### Meetings ###
+### Meetings #######################################################
 
 # If table isn't empty, empty it
 Meeting.query.delete()
@@ -140,7 +140,7 @@ mtg5 = db.session.query(Meeting).filter( Meeting.date == "9/21/21", Meeting.club
 mtg6 = db.session.query(Meeting).filter( Meeting.date == "9/21/21", Meeting.club_id == c4.id).first()
 mtg7 = db.session.query(Meeting).filter( Meeting.date == "9/30/21", Meeting.club_id == c5.id).first()
 
-## Notes ###
+## Notes #######################################################
 
 # If table isn't empty, empty it
 Note.query.delete()
@@ -154,7 +154,7 @@ n4 = Note(user_id=u3.id, book_id=b4.id, text="Mama mía pizza pia!")
 db.session.add_all([n1, n2, n3, n4])
 db.session.commit()
 
-### Reads ###
+### Reads #######################################################
 
 # If table isn't empty, empty it
 Read.query.delete()
@@ -182,14 +182,14 @@ db.session.add_all([r1, r2, r3, r4, r5, r6, r7, r8, r9])
 db.session.commit()
 
 
-### Add remaining notes to meetings ###
+### Add remaining notes to meetings #######################################################
 
 mtg1.notes.append(n2)
 mtg3.notes.append(n3)
 mtg5.notes.append(n4)
 
 
-### Add favorites ###
+### Add favorites #######################################################
 
 # If table isn't empty, empty it
 Favorite.query.delete()

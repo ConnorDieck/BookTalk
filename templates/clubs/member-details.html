@@ -14,6 +14,10 @@
     {% endif %}
 {% endwith %}
 
+
+<!-- Current read section -->
+
+
 <h3>Currently reading:                     
     {% for book in club.books %}
         {% for read in book.reads %}
@@ -29,7 +33,7 @@
                                 </a>
                             </h5>
                         </div>
-                    {% if g.user.id == admin.id or g.user in mods %}
+                    {% if g.user.id == admin.user_id or g.user in mods %}
                         <form action="/clubs/{{ club.id }}/{{ book.id }}/toggle_complete" method="post">
                             <button class="btn btn-success ml-2" id="finish-book">Mark as Finished</button>
                         </form>
@@ -39,6 +43,9 @@
         {% endfor %}
     {% endfor %}
 </h3>
+
+
+<!-- Meetings section -->
 
 
 <h3>Meetings:</h3>
@@ -51,6 +58,13 @@
        </div>
    {% endfor %}
 </div>
+
+{% if g.user.id == admin.user_id or g.user in mods %}
+    <a href="/clubs/{{ club.id }}/meetings/new" class="btn btn-success">New Meeting</a>
+{% endif %}
+
+
+<!-- Users section -->
 
 
  <h3>BookTalkers in {{ club.name }}:</h3>
@@ -91,9 +105,17 @@
     {% endfor %}
  </ul>
 
- {% if g.user.id == admin.id or g.user in mods %}
+
+
+
+ <!-- Library section -->
+
+
+
+ {% if g.user.id == admin.user_id or g.user in mods %}
     <a href="/books/add" class="btn btn-success">Add a new book!</a>
 {% endif %}
+
 
 
  <h3>Shelves:</h3>
@@ -155,7 +177,7 @@
     <form method="POST" action="/clubs/{{ club.id }}/leave" class="form-inline">
         <button class="btn btn-danger ml-2">Leave Club</button>
     </form>
-    {% if g.user.id == admin.id %}
+    {% if g.user.id == admin.user_id %}
         <form method="POST" action="/clubs/{{ club.id }}/delete" class="form-inline">
             <button class="btn btn-outline-danger ml-2">Delete Club</button>
         </form>

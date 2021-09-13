@@ -37,13 +37,17 @@
 </div>
 
 {% if user.id == g.user.id %}
+<h5>My Clubs:</h5>
     <div class="container">
-        <h5>Upcoming meetings:</h5>
         <div class="row">
             {% for club in user.clubs %}
             <div class="card note-card" style="width: 10rem">
                 <div class="card-body">
-                    <h5 class="card-title">{{ club.name }}</h5>
+                    <h5 class="card-title">
+                        <a href="/clubs/{{ club.id }}">
+                            {{ club.name }}
+                        </a>
+                    </h5>
                     {% if club.meetings|length > 0 %}
                         <ul class="card-text">
                             {% for meeting in club.meetings %}
@@ -64,10 +68,13 @@
 
     </div>
 
-    <a href="/users/{{ user.id }}/edit" class="btn btn-success">Edit Profile</a>
-    <form method="POST" action="/users/{{ user.id }}/delete" class="form-inline">
-        <button class="btn btn-outline-danger ml-2">Delete Profile</button>
-    </form>
+    <div class="row">
+            <a href="/users/{{ user.id }}/edit" class="btn btn-success col-2">Edit Profile</a>
+        <form method="POST" action="/users/{{ user.id }}/delete" class="form-inline col-4">
+            <button class="btn btn-outline-danger ">Delete Profile</button>
+        </form>
+    </div>
+
 {% endif %}
 
 
