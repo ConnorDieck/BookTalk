@@ -1,3 +1,4 @@
+from operator import indexOf
 from flask import Flask, request, redirect, render_template, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
 from werkzeug.exceptions import Unauthorized
@@ -584,7 +585,7 @@ def create_meeting(club_id):
 
 
 
-@app.route("/meetings/<int:m_id>/notes/add")
+@app.route("/meetings/<int:m_id>/notes/add", methods=["GET", "POST"])
 def add_note(m_id):
     """Generate and handle submission of new note form"""
 
@@ -598,26 +599,33 @@ def add_note(m_id):
     form = NotesForm()
 
     # get list of club's book titles
+    # titles = [(book.title, book.id) for book in club.books]
     titles = [book.title for book in club.books]
+    book_ids = [book.id for book in club.books]
+
+    # pdb.set_trace()
 
     # dynamically set topic choices
     form.book.choices = titles
 
     if form.validate_on_submit():
         title = form.book.data
-        text = form.text.data
+        id_ind = titles.index(title)
+        book_id = book_ids[id_ind]
+        
+        book = db.session.query(Book).filter(Book.id == book_id).first()
 
-        book = db.session.query(Book).filter(Book.title == title, club.in_(Book.clubs)).first()
+        text = form.text.data
 
         note = Note(text=text, user_id=g.user.id, book_id=book.id, meeting_id=m_id)
 
         db.session.add(note)
         db.session.commit()
         flash("Note added!")
-        return redirect(f"/clubs/{club_id}")
+        return redirect(f"/clubs/{club.id}/meetings/{m_id}")
 
     else:
-        return render_template("clubs/meetings/add.html", form=form)
+        return render_template("notes/add.html", form=form, meeting=meeting, club=club)
 
 
 
