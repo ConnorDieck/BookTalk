@@ -32,7 +32,7 @@ class LoginForm(FlaskForm):
 class NotesForm(FlaskForm):
     book = SelectField("Which book is this note for?", validators=[InputRequired()])
     text = StringField("Note Text", validators=[InputRequired()])
-    discussion_date = StringField("Discussion Date", validators=[InputRequired()])
+    
 
 class MeetingForm(FlaskForm):
     date = StringField("Date", validators=[InputRequired()])

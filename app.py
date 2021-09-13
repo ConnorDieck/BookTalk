@@ -584,9 +584,40 @@ def create_meeting(club_id):
 
 
 
-@app.route("/clubs/<int:club_id>/meetings/<int:m_id>/notes/add")
-def add_note(club_id, m_id):
-    """Allows user to create new note associated with a meeting"""
+@app.route("/meetings/<int:m_id>/notes/add")
+def add_note(m_id):
+    """Generate and handle submission of new note form"""
+
+    meeting = db.session.query(Meeting).get_or_404(m_id)
+    club = db.session.query(Club).get_or_404(meeting.club_id)
+
+    if not g.user or g.user not in club.users:
+        flash("You must be signed in as a member of that club in order to view that page.", "text-danger")
+        return redirect("/")
+
+    form = NotesForm()
+
+    # get list of club's book titles
+    titles = [book.title for book in club.books]
+
+    # dynamically set topic choices
+    form.book.choices = titles
+
+    if form.validate_on_submit():
+        title = form.book.data
+        text = form.text.data
+
+        book = db.session.query(Book).filter(Book.title == title, club.in_(Book.clubs)).first()
+
+        note = Note(text=text, user_id=g.user.id, book_id=book.id, meeting_id=m_id)
+
+        db.session.add(note)
+        db.session.commit()
+        flash("Note added!")
+        return redirect(f"/clubs/{club_id}")
+
+    else:
+        return render_template("clubs/meetings/add.html", form=form)
 
 
 
