@@ -1,13 +1,12 @@
-from operator import indexOf
 from flask import Flask, request, redirect, render_template, session, flash, g
 from flask_debugtoolbar import DebugToolbarExtension
-from werkzeug.exceptions import Unauthorized
 from sqlalchemy.exc import IntegrityError
 from datetime import date
 
 from models import db, connect_db, User, Book, Club, Membership, Read, Note, Meeting, Favorite
-from forms import LoginForm, RegisterForm, NewNoteForm, EditNoteForm, DeleteForm, EditUserForm, ClubForm, MeetingForm
+from forms import LoginForm, RegisterForm, NewNoteForm, EditNoteForm, DeleteForm, EditUserForm, ClubForm, MeetingForm, BookSearchForm
 
+import requests
 import pdb
 
 CURR_USER_KEY = "curr_user"
@@ -769,5 +768,22 @@ def remove_favorite(book_id):
         flash(f"Removed {book.title} from your favorite books.", "text-success")
         return redirect("/")
 
+@app.route("/books/search", methods=["GET", "POST"])
+def search_book():
+    """Generate and handle submission of search book form"""
 
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
 
+    return render_template("/books/search.html")
+
+@app.route("/books/show", methods=["POST"])
+def show_book():
+    """Send a request to the OpenLibrary API using the bookID sent from the client, then transform response into BookTalk object. Pass this object to the rendered template."""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+
+    

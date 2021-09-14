@@ -44,5 +44,8 @@ class MeetingForm(FlaskForm):
 
     # Club ID will be added automatically
 
+class BookSearchForm(FlaskForm):
+    query = StringField("Enter the title or author of the book you'd like to add", validators=[InputRequired()])
+
 class DeleteForm(FlaskForm):
     """Form used to send POST requests in delete pathways"""
