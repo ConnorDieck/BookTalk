@@ -682,6 +682,8 @@ def delete_note(m_id, note_id):
 ############################################################################
 # Book routes
 
+OPEN_LIB_URL = 'https://openlibrary.org';
+
 @app.route("/books")
 def show_books():
     """Shows list of books in BookTalk's database."""
@@ -786,4 +788,20 @@ def show_book():
         flash("You must be signed in in order to view that page.", "text-danger")
         return redirect("/")
 
+    bookID = request.json['bookID']
+    print("*********************************************")
+    print(f"{bookID}")
+
+    # In order to get usable data, OpenLibrary requres two requests: the first to get the ISBN, which is then used for the second request which can be transformed into usable data
+
+    res = requests.get(f"{OPEN_LIB_URL}/books/{bookID}.json")
+
+    # print(res.json()['isbn_13'][0])
+    ISBN = res.json()['isbn_13'][0]
+
+    # TO DO: Implement second request using ISBN
+    # ISBNres = requests.get(f"{OPEN_LIB_URL}/api/books?bibkeys=ISBN:{ISBN}&format=json&jscmd=data")
+
+    return redirect("/")
     
+

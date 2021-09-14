@@ -17,14 +17,14 @@ $('#search-form').on('submit', async function(evt) {
 		parameters = {
 			q: query,
 			limit: 10,
-			fields: 'key,cover_i,title,author_name,name',
+			fields: 'key,cover_i,title,author_name,name,seed',
 			mode: 'everything'
 		};
 	} else {
 		parameters = {
 			author: query,
 			limit: 10,
-			fields: 'key,cover_i,title,author_name,name',
+			fields: 'key,cover_i,title,author_name,name,seed',
 			mode: 'everything'
 		};
 	}
@@ -39,7 +39,8 @@ $('#search-form').on('submit', async function(evt) {
 });
 
 function generateBook(book) {
-	const bookID = book['key'].slice(7);
+	// Use the first seed for bookID, this way it will correspond to the bookdata and have details for the ISBN
+	const bookID = book['seed'][0].slice(7);
 
 	return `<div class="book-tag" data-id=${bookID}> <img src="${COVERS_URL}${book[
 		'cover_i'
