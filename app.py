@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from datetime import date
 
 from models import db, connect_db, User, Book, Club, Membership, Read, Note, Meeting, Favorite
-from forms import LoginForm, RegisterForm, NotesForm, DeleteForm, EditUserForm, ClubForm, MeetingForm
+from forms import LoginForm, RegisterForm, NewNoteForm, EditNoteForm, DeleteForm, EditUserForm, ClubForm, MeetingForm
 
 import pdb
 
@@ -596,7 +596,7 @@ def add_note(m_id):
         flash("You must be signed in as a member of that club in order to view that page.", "text-danger")
         return redirect("/")
 
-    form = NotesForm()
+    form = NewNoteForm()
 
     # get list of club's book titles
     # titles = [(book.title, book.id) for book in club.books]
@@ -627,6 +627,57 @@ def add_note(m_id):
     else:
         return render_template("notes/add.html", form=form, meeting=meeting, club=club)
 
+    
+@app.route("/meetings/<int:m_id>/notes/<int:note_id>/edit", methods=["GET", "POST"])
+def edit_note(m_id, note_id):
+    """Generate and handle submission of new note form"""
+
+    meeting = db.session.query(Meeting).get_or_404(m_id)
+    club = db.session.query(Club).get_or_404(meeting.club_id)
+
+    if not g.user or g.user not in club.users:
+        flash("You must be signed in as a member of that club in order to view that page.", "text-danger")
+        return redirect("/")
+
+    note = Note.query.filter(Note.id == note_id).first()
+
+    form = EditNoteForm()
+
+    if form.validate_on_submit():
+        text = form.text.data
+
+        note.text = text
+
+        db.session.commit()
+        flash("Note edited!")
+        return redirect(f"/clubs/{club.id}/meetings/{m_id}")
+
+    else:
+        return render_template("notes/edit.html", form=form, meeting=meeting, club=club)
+
+@app.route("/meetings/<int:m_id>/notes/<int:note_id>/delete", methods=["POST"])
+def delete_note(m_id, note_id):
+    """Delete a note."""
+
+    meeting = db.session.query(Meeting).get_or_404(m_id)
+    club = db.session.query(Club).get_or_404(meeting.club_id)
+
+    if not g.user or g.user not in club.users:
+        flash("You must be signed in as a member of that club in order to view that page.", "text-danger")
+        return redirect("/")
+    
+    note = Note.query.filter(Note.id == note_id).first()
+
+    if note.user_id != g.user.id:
+        flash("Only a note's creator may delete it.", "text-danger")
+        return redirect(f"/clubs/{club.id}/meetings/{m_id}")
+
+    else:
+        db.session.delete(note)
+        db.session.commit()
+
+        flash("Note deleted!", "text-success")
+        return redirect(f"/clubs/{club.id}/meetings/{m_id}")
 
 
 ############################################################################

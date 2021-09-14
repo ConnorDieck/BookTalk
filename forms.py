@@ -29,11 +29,13 @@ class LoginForm(FlaskForm):
     username = StringField("Username", validators=[InputRequired()])
     password = PasswordField("Password", validators=[InputRequired()])
 
-class NotesForm(FlaskForm):
+class NewNoteForm(FlaskForm):
     book = SelectField("Which book is this note for?", validators=[InputRequired()])
-    text = StringField("Note Text", validators=[InputRequired()])
-    
+    text = TextAreaField("Note Text", validators=[InputRequired()])
 
+class EditNoteForm(FlaskForm):
+    text = TextAreaField("New Note Text", validators=[InputRequired()])
+    
 class MeetingForm(FlaskForm):
     date = StringField("Date", validators=[InputRequired()])
     # Topic will be selected from club's books

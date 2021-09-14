@@ -34,11 +34,11 @@
                             <h5 class="card-title">{{user.username}} Note</h5>
                             <p class="card-text"> {{note.text}} </p>
                             {% if g.user.id == user.id %}
-                                <a href="/clubs/{{ club.id }}/meetings/{{ meeting.id }}/notes/edit" class="btn btn-info">
+                                <a href="/meetings/{{ meeting.id }}/notes/{{note.id}}/edit" class="btn btn-info">
                                     Edit
                                 </a>
-                                <form action="/clubs/{{ club.id }}/meetings/{{ meeting.id }}/notes/delete" method="post">
-                                    <button class="btn btn-outline-danger ml-2" id="finish-book">Mark as Finished</button>
+                                <form action="/meetings/{{ meeting.id }}/notes/{{ note.id }}/delete" method="post">
+                                    <button class="btn btn-outline-danger ml-2" id="finish-book">Delete</button>
                                 </form>
                             {% endif %}
                         </div>
