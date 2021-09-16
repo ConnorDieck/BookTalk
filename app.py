@@ -5,6 +5,7 @@ from datetime import date
 
 from models import db, connect_db, User, Book, Club, Membership, Read, Note, Meeting, Favorite
 from forms import LoginForm, RegisterForm, NewNoteForm, EditNoteForm, DeleteForm, EditUserForm, ClubForm, MeetingForm, BookSearchForm
+from transforms import transform_book_res
 
 import requests
 import pdb
@@ -780,7 +781,7 @@ def search_book():
 
     return render_template("/books/search.html")
 
-@app.route("/books/show", methods=["POST"])
+@app.route("/books/transform", methods=["POST"])
 def show_book():
     """Send a request to the OpenLibrary API using the bookID sent from the client, then transform response into BookTalk object. Pass this object to the rendered template."""
 
@@ -796,12 +797,61 @@ def show_book():
 
     res = requests.get(f"{OPEN_LIB_URL}/books/{bookID}.json")
 
-    # print(res.json()['isbn_13'][0])
-    ISBN = res.json()['isbn_13'][0]
+    # print(res.json())
+    try:
+        ISBN = res.json()['isbn_13'][0]
+    except KeyError:
+        flash(f"Our database doesn't include an ISBN number for the book you selected. Try choosing another.", "text-danger")
+        return redirect("/")
 
-    # TO DO: Implement second request using ISBN
-    # ISBNres = requests.get(f"{OPEN_LIB_URL}/api/books?bibkeys=ISBN:{ISBN}&format=json&jscmd=data")
+    ISBNres = requests.get(f"{OPEN_LIB_URL}/api/books?bibkeys=ISBN:{ISBN}&format=json&jscmd=data")
 
-    return redirect("/")
+    bookData = ISBNres.json()[f"ISBN:{ISBN}"]
+    book = transform_book_res(bookData)
+    print(book)
+
+    session['book'] = book
+
+    return redirect("/books/show")
+
+@app.route("/books/show")  
+def display_book():
+    """Receives book data from transform route, and then uses to render template"""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+
+    return render_template("/books/show.html")
+
     
+# @app.route("/books/<OLID>/transform")
+# def show_book(OLID):
+#     """Load page with BookTalk object using client query"""
 
+#     if not g.user:
+#         flash("You must be signed in in order to view that page.", "text-danger")
+#         return redirect("/")
+
+#     # In order to get usable data, OpenLibrary requres two requests: the first to get the ISBN, which is then used for the second request which can be transformed into usable data
+
+#     res = requests.get(f"{OPEN_LIB_URL}/books/{OLID}.json")
+    
+#     print(res.json())
+#     print("*****FIRST REQUEST*****")
+#     try:
+#         ISBN = res.json()['isbn_13'][0]
+#     except KeyError:
+#         flash(f"Our database doesn't include an ISBN number for the book you selected. Try choosing another.", "text-danger")
+#         return redirect("/books/search")
+
+#     ISBNres = requests.get(f"{OPEN_LIB_URL}/api/books?bibkeys=ISBN:{ISBN}&format=json&jscmd=data")
+
+#     bookData = ISBNres.json()[f"ISBN:{ISBN}"]
+#     print("***********************************************")
+#     print(bookData)
+#     print("*****SECOND REQUEST*****")
+#     book = transform_book_res(bookData)
+
+#     return redirect("/books/checkout")
+    

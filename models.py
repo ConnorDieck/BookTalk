@@ -76,8 +76,7 @@ class Book(db.Model):
     title = db.Column(db.Text, nullable=False)
     author = db.Column(db.String(), nullable=False)
     image = db.Column(db.Text, default="/static/images/placeholder.png")
-    description = db.Column(db.Text)
-    num_pages = db.Column(db.Integer, nullable=False)
+    num_pages = db.Column(db.Integer)
     publish_date = db.Column(db.Text, nullable=False)
 
     # Map to clubs through reads
