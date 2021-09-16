@@ -253,14 +253,14 @@ def show_club_page(club_id):
         # Build shelves
 
         # Create list of club's books
-        reads = []
-        for book in club.books:
-            for read in book.reads:
-                reads.append(read)
+        # reads = []
+        # for book in club.books:
+        #     for read in book.reads:
+        #         reads.append(read)
 
         # Create list of reads that are not current
         shelved = []
-        for read in reads:
+        for read in club.reads:
             if not read.current:
                 shelved.append(read)
 
