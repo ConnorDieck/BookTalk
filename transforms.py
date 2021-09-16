@@ -16,9 +16,9 @@ def transform_book_res(data):
     except:
         image = "/static/images/placeholder.png"
     try:
-        num_pages = data["number_of_pages"] or None,
+        num_pages = data["number_of_pages"]
     except:
-        num_pages = "Number of pages not available"
+        num_pages = None
     try:
         publish_date = data["publish_date"]
     except:

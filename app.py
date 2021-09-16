@@ -826,34 +826,29 @@ def display_book():
 
     return render_template("/books/show.html")
 
+@app.route("/books/add", methods=["POST"])
+def add_book_to_db():
+    """Takes book from session and adds it to BookTalk DB"""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/") 
     
-# @app.route("/books/<OLID>/transform")
-# def show_book(OLID):
-#     """Load page with BookTalk object using client query"""
+    book = session['book']
 
-#     if not g.user:
-#         flash("You must be signed in in order to view that page.", "text-danger")
-#         return redirect("/")
 
-#     # In order to get usable data, OpenLibrary requres two requests: the first to get the ISBN, which is then used for the second request which can be transformed into usable data
+    # Check that book is not already in DB
+    books = db.session.query(Book).all()
+    titles = [book.title for book in books]
 
-#     res = requests.get(f"{OPEN_LIB_URL}/books/{OLID}.json")
-    
-#     print(res.json())
-#     print("*****FIRST REQUEST*****")
-#     try:
-#         ISBN = res.json()['isbn_13'][0]
-#     except KeyError:
-#         flash(f"Our database doesn't include an ISBN number for the book you selected. Try choosing another.", "text-danger")
-#         return redirect("/books/search")
+    if book['title'] not in titles:
+        new_book = Book(title=book['title'], author=book['author'], image=book['image'], num_pages=book['num_pages'], publish_date=book['publish_date'])
+        db.session.add(new_book)
+        db.session.commit()
 
-#     ISBNres = requests.get(f"{OPEN_LIB_URL}/api/books?bibkeys=ISBN:{ISBN}&format=json&jscmd=data")
+        flash(f"Added {book['title']} to BookTalk!", "text-success")
+        return redirect("/books")
 
-#     bookData = ISBNres.json()[f"ISBN:{ISBN}"]
-#     print("***********************************************")
-#     print(bookData)
-#     print("*****SECOND REQUEST*****")
-#     book = transform_book_res(bookData)
-
-#     return redirect("/books/checkout")
-    
+    else:
+        flash(f"{book['title']} is already in BookTalk's Library.", "text-danger")
+        return redirect("/books")
