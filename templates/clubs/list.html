@@ -23,8 +23,8 @@
                 <div class="card-body">
                     {% if club.books|length > 0 %}
                         {% for book in club.books %}
-                            {% for read in book.reads %}
-                                {% if read.current %}
+                            {% for read in club.reads %}
+                                {% if read.book_id == book.id and read.current %}
                                     <img src="{{ book.image }}" alt="{{ book.title }}" class="card-img-top">
                                 {% endif %}
                             {% endfor %}
@@ -35,8 +35,8 @@
                     <h5 class="card-title">{{ club.name }}</h5>
                     {% if club.books|length > 0 %}
                         {% for book in club.books %}
-                            {% for read in book.reads %}
-                                {% if read.current %}
+                            {% for read in club.reads %}
+                                {% if read.book_id == book.id and read.current %}
                                     <p>Currently reading: <b>{{ book.title }}</b></p>
                                 {% endif %}
                             {% endfor %}

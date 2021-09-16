@@ -512,8 +512,63 @@ def toggle_complete(club_id, book_id):
         flash(f"Marked as finished!", "text-success")
         return redirect(f"/clubs/{club_id}")
 
+@app.route("/clubs/<int:club_id>/library")
+def show_unchecked_books(club_id):
+    """Loads a page with books not currently in club"""
+
+    club = db.session.query(Club).get_or_404(club_id)
+
+    membership = db.session.query(Membership).filter(Membership.club_id == club_id, Membership.user_id == g.user.id).first()
+
+    if membership.admin or membership.moderator:
+        permission = True
+    else:
+        permission = False
+
+    if not g.user or g.user not in club.users or not permission:
+        flash("You must have be an admin or moderator of that club in order to view that page.", "text-danger")
+        return redirect("/")
+
+    # CODE REVIEW QUESTION: Is there a cleaner way to do the following query? 
+
+    # Get books that are not read by clubs which the user is a member of
+    all_books = Book.query.all()
+    all_book_ids = [book.id for book in all_books]
+    club_book_ids = [read.book_id for read in club.reads]
+
+    unread_ids = []
+    for book_id in all_book_ids:
+        if book_id not in club_book_ids:
+            unread_ids.append(book_id)
+    
+    unread_books = Book.query.filter(Book.id.in_(unread_ids))
+
+    return render_template("books/rent.html", club=club, books=unread_books)
+
+@app.route("/clubs/<int:club_id>/<int:book_id>/add", methods=["POST"])
+def add_book_to_club(club_id, book_id):
+    """Adds a book and club id to reads table"""
+
+    club = db.session.query(Club).get_or_404(club_id)
+    book = db.session.query(Book).get_or_404(book_id)
+
+    membership = db.session.query(Membership).filter(Membership.club_id == club_id, Membership.user_id == g.user.id).first()
 
 
+    if membership.admin or membership.moderator:
+        permission = True
+    else:
+        permission = False
+
+    if not g.user or g.user not in club.users or not permission:
+        flash("You must have be an admin or moderator of that club in order to view that page.", "text-danger")
+        return redirect("/")
+
+    read = Read(club_id=club.id, book_id=book.id, current=False, complete=False)
+    db.session.add(read)
+    db.session.commit()
+
+    return redirect(f"/clubs/{club_id}")
 
 ############################################################################
 # Meetings routes (clubs subroutes)

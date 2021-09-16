@@ -20,8 +20,8 @@
 
 <h3>Currently reading:                     
     {% for book in club.books %}
-        {% for read in book.reads %}
-            {% if read.current %}
+        {% for read in club.reads %}
+            {% if read.book_id == book.id and read.current %}
                 <div class="card text-center curr-read" style="width: 18rem">
                     <a href="/books/{{ book.id }}">
                         <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
@@ -112,13 +112,14 @@
 
 
 
+ <h3>Shelves:</h3>
+
  {% if g.user.id == admin.user_id or g.user in mods %}
-    <a href="/books/search" class="btn btn-success">Add a new book!</a>
+    <a href="/clubs/{{ club.id }}/library" class="btn btn-success">Add a new book!</a>
 {% endif %}
 
 
 
- <h3>Shelves:</h3>
 
  <div class="shelf">
     <h4>To Read:</h4>

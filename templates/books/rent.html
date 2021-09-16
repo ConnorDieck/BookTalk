@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Library{% endblock %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, msg in messages %}
+            <p class="{{ category }}">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<h1>BookTalk Library</h1>
+
+
+
+<div class="row">
+    
+    {% for book in books %}
+        <div class="card book-card" style="width: 18rem">
+            <div class="card-body">
+
+                <img src="{{ book.image }}" alt="{{ book.title }}" class="card-img-top">
+
+                <h5 class="card-title">{{ book.title }}</h5>
+                
+                <div class="container">
+                    <div class="row">
+                        <a href="/books/{{ book.id }}" class="btn btn-primary col">Details</a>
+                        <form method="POST" action="/clubs/{{ club.id }}/{{ book.id }}/add" class="form-inline col">
+                            <button class="btn btn-outline-success">Add to Club</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+ 
+</div>
+
+
+
+{% endblock %}
