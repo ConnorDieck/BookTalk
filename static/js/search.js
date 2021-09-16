@@ -46,7 +46,7 @@ function generateBook(book) {
 		'cover_i'
 	]}-M/jpg" alt="No image available" class="cover-image"> <li> Title: ${book['title']} </li> <li> Author: ${book[
 		'author_name'
-	][0]} </li> </div>`;
+	][0]} </div> `;
 }
 
 // TODO: Use event delegation on #results-list in order to create listener function on each child div. The function should send a post query to the server that uses the book[key] to pull more info about the book from the Works API, transforms the result into a BookTalk object, and then renders a new page displaying that object. This object can then be added to the BookTalk database IF another book with a matching title and author does not already exist
@@ -57,7 +57,9 @@ $('#results-list').on('click', '.book-tag', async function(evt) {
 
 	// Get the URL for the works request
 	const bookID = $bookData.dataset.id;
+	console.log(bookID);
 
 	// Post the URL to the add book route on the server where it will be sent and then transformed into a BookTalk object, and then redirect to a new page where the book object can be added to the database
-	const res = await axios.post(`${SERVER_URL}/books/show`, { bookID });
+	const res = await axios.post(`${SERVER_URL}/books/transform`, { bookID });
+	console.log(res);
 });
