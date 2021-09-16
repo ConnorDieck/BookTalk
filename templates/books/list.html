@@ -4,8 +4,6 @@
 
 {% block content %}
 
-<h1>My Books</h1>
-
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, msg in messages %}
@@ -13,6 +11,41 @@
         {% endfor %}
     {% endif %}
 {% endwith %}
+
+{% if all_books %}
+
+<h1>BookTalk Library</h1>
+
+<a href="/books/my_books" class="btn btn-success">See My Books</a>
+
+
+<div class="row">
+    
+    {% for book in books %}
+        <div class="card book-card" style="width: 18rem">
+            <div class="card-body">
+
+                <img src="{{ book.image }}" alt="{{ book.title }}" class="card-img-top">
+
+                <h5 class="card-title">{{ book.title }}</h5>
+                
+                <div class="container">
+                    <div class="row">
+                        <a href="/books/{{ book.id }}" class="btn btn-primary col">Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+ 
+</div>
+
+{% else %}
+
+<h1>My Books</h1>
+
+<a href="/books" class="btn btn-success">See All Books</a>
+
 
 <div class="row">
     
@@ -43,6 +76,10 @@
     {% endfor %}
  
 </div>
+
+{% endif %}
+
+
 
 
 {% endblock %}

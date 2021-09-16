@@ -693,6 +693,20 @@ def show_books():
         flash("You must be signed in in order to view that page.", "text-danger")
         return redirect("/")
 
+    books = Book.query.all()
+
+    all_books = True
+
+    return render_template("books/list.html", books=books, all_books=all_books)
+
+@app.route("/books/my_books")
+def show_my_books():
+    """Shows list of books in BookTalk's database."""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+
     # CODE REVIEW QUESTION: Is there a cleaner way to do the following query? In SQL, we're running 4 JOINs:
     # SELECT books.id FROM books                                           
     # JOIN reads                                                                      
