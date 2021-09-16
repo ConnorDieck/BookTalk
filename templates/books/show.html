@@ -5,9 +5,7 @@
 
 {% block content %}
 
-{% if session[book] %}
-
-<h1 class="header">{{ session[book].title }} </h1>
+<h1 class="header">{{ session['book']['title'] }} </h1>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -20,14 +18,14 @@
 
 
 <div class="container book-container">
-    <img src="{{ session[book].image }}" alt="{{ session[book].title }} cover photo" id="cover-photo">
+    <img src="{{ session['book']['image'] }}" alt="{{ session['book']['title'] }} cover photo" id="cover-photo">
 </div>
 
 <ul>
-    <li>Title: {{ session[book].title }}</li>
-    <li>Author: {{ session[book].author }}</li>
-    <li>Publishing Date: {{ session[book].publish_date }}</li>
-    <li>Number of pages: {{ session[book].num_pages }}</li>
+    <li>Title: {{ session['book']['title'] }}</li>
+    <li>Author: {{ session['book']['author'] }}</li>
+    <li>Publishing Date: {{ session['book']['publish_date'] }}</li>
+    <li>Number of pages: {{ session['book']['num_pages'] }}</li>
 </ul>
 
 <form action="/books/add" method="post" class="form-inline">
@@ -36,12 +34,5 @@
 
 <script src="/static/js/show.js"></script>
 
-{% else %}
-
-<h1 class="header">Error</h1>
-
-<p>Uh oh, something went wrong. Please try again!</p>
-
-{% endif %}
 
 {% endblock %}

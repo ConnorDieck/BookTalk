@@ -781,36 +781,38 @@ def search_book():
 
     return render_template("/books/search.html")
 
-@app.route("/books/transform", methods=["POST"])
-def show_book():
+@app.route("/books/<book_id>/transform", methods=["POST"])
+def show_book(book_id):
     """Send a request to the OpenLibrary API using the bookID sent from the client, then transform response into BookTalk object. Pass this object to the rendered template."""
 
     if not g.user:
         flash("You must be signed in in order to view that page.", "text-danger")
         return redirect("/")
 
-    bookID = request.json['bookID']
+    # bookID = request.json['bookID']
     print("*********************************************")
-    print(f"{bookID}")
+    # print(f"BookID: {bookID}")
+    print(f"BookID: {book_id}")
 
     # In order to get usable data, OpenLibrary requres two requests: the first to get the ISBN, which is then used for the second request which can be transformed into usable data
 
-    res = requests.get(f"{OPEN_LIB_URL}/books/{bookID}.json")
+    res = requests.get(f"{OPEN_LIB_URL}/books/{book_id}.json")
 
-    # print(res.json())
+    print(res.json())
     try:
         ISBN = res.json()['isbn_13'][0]
     except KeyError:
         flash(f"Our database doesn't include an ISBN number for the book you selected. Try choosing another.", "text-danger")
-        return redirect("/")
+        return redirect("/books/search")
 
     ISBNres = requests.get(f"{OPEN_LIB_URL}/api/books?bibkeys=ISBN:{ISBN}&format=json&jscmd=data")
 
     bookData = ISBNres.json()[f"ISBN:{ISBN}"]
     book = transform_book_res(bookData)
-    print(book)
+    print(f"Book Object: {book}")
 
     session['book'] = book
+    # pdb.set_trace()
 
     return redirect("/books/show")
 
