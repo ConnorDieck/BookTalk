@@ -398,6 +398,16 @@ def leave_club(club_id):
         flash("You're not a member of this club.'", "text-danger")
         return redirect(f"/clubs/{club_id}")
 
+    membership = Membership.query.filter(Membership.user_id == g.user.id, Membership.club_id == club_id).first()
+
+    # If an admin tries to leave, ensure that there are other admins. Otherwise, prevent them from leaving until they promote another member to admin
+    if membership.admin:
+        memberships = Membership.query.filter(Membership.club_id == club_id).all()
+        admins = [member for member in memberships]
+        if len(admins) == 1:
+            flash(f"Please promote another member to admin before leaving the club.", "text-danger")
+            return redirect(f"/clubs/{club.id}")
+        
     g.user.clubs.remove(club)
     db.session.commit()
 
@@ -434,6 +444,36 @@ def add_moderator(club_id, user_id):
     else:
         flash(f"Admin status required.", "text-danger")
         return redirect(f"/clubs/{club_id}")
+
+@app.route("/clubs/<int:club_id>/<int:user_id>/make_admin", methods=["POST"])
+def make_admin(club_id, user_id):
+    """Allow club admin to add a moderator"""
+
+    if not g.user:
+        flash("You must be signed in in order to view that page.", "text-danger")
+        return redirect("/")
+        
+    admin = Membership.query.filter(Membership.user_id == g.user.id, Membership.club_id == club_id).first()
+    is_admin = admin.admin
+
+    if is_admin:
+        membership = Membership.query.filter(Membership.user_id == user_id, Membership.club_id == club_id).first()
+        user = User.query.filter(User.id == user_id).first()
+
+        if membership.admin == False:
+            membership.admin = True
+            db.session.commit()
+            flash(f"Promoted {user.username} to Admin!", "text-success")
+            return redirect(f"/clubs/{club_id}")
+        
+        else:
+            flash(f"{ user.username } is already an Admin.", "text-danger")
+            return redirect(f"/clubs/{club_id}")
+
+    else:
+        flash(f"Admin status required.", "text-danger")
+        return redirect(f"/clubs/{club_id}")
+
 
 
 
@@ -634,6 +674,28 @@ def create_meeting(club_id):
         return render_template("clubs/meetings/add.html", form=form)
 
 
+@app.route("/meetings/<int:m_id>/delete", methods=["POST"])
+def delete_meeting(m_id):
+    """Delete meeting"""
+
+    meeting = db.session.query(Meeting).get_or_404(m_id)
+    club = db.session.query(Club).filter(Club.id == meeting.club_id).first()
+
+    membership = db.session.query(Membership).filter(Membership.club_id == club.id, Membership.user_id == g.user.id).first()
+
+    if membership.admin or membership.moderator:
+        permission = True
+    else:
+        permission = False
+
+    if not g.user or g.user not in club.users or not permission:
+        flash("You must have be an admin or moderator of that club in order to view that page.", "text-danger")
+        return redirect("/")
+
+    db.session.delete(meeting)
+    db.session.commit()
+    flash("Deleted meeting.", "text-success")
+    return redirect(f"/clubs/{club.id}")
 
 ############################################################################
 # Notes routes 
