@@ -25,7 +25,7 @@ class User(db.Model):
     email = db.Column(db.String(50), nullable=False)
     first_name = db.Column(db.String(), nullable=False)
     last_name = db.Column(db.String(), nullable=False)
-    image = db.Column(db.Text, default="")
+    image = db.Column(db.Text, default="/static/images/placeholder.png")
     bio = db.Column(db.Text)
 
     # Map to clubs through membership. You can see which clubs a user is a part of, and which users are in which clubs
@@ -44,12 +44,18 @@ class User(db.Model):
     @classmethod
     def register(cls, username, pwd, first, last, image, bio, email):
         """Register user w/hashed password & return user."""
+
         pwd_hashed = bcrypt.generate_password_hash(pwd)
+        
         # turn bytestring into normal (unicode utf8) string
         hashed_utf8 = pwd_hashed.decode("utf8")
 
         # return instance of user w/username and hashed pwd
-        return cls(username=username, password=hashed_utf8, first_name=first, last_name=last, image=image, bio=bio, email=email)
+        user = User(username=username, password=hashed_utf8, first_name=first, last_name=last, image=image, bio=bio, email=email)
+
+        db.session.add(user)
+
+        return user
 
     @classmethod
     def authenticate(cls, username, pwd):
