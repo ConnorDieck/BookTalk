@@ -85,6 +85,9 @@
                 <form action="/clubs/{{ club.id }}/{{ user.id }}/toggle_moderator" method="post" class="form-inline col">
                     <button class="btn btn-outline-danger">Demote</button>
                 </form>
+                <form action="/clubs/{{ club.id }}/{{ user.id }}/make_admin" method="post" class="form-inline col">
+                    <button class="btn btn-outline-success">Make Admin</button>
+                </form>
             {% endif %}
         </li>
     {% endfor %}
