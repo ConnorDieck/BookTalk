@@ -10,7 +10,7 @@ from unittest import TestCase
 from requests.sessions import session
 from sqlalchemy.exc import IntegrityError
 
-from models import db, User, Note, Membership, Favorite
+from models import Club, db, User, Note, Membership, Favorite
 
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
@@ -47,6 +47,7 @@ class UserViewsTestCase(TestCase):
         Note.query.delete()
         Membership.query.delete()
         Favorite.query.delete()
+        Club.query.delete()
 
         self.client = app.test_client()
 
@@ -63,6 +64,11 @@ class UserViewsTestCase(TestCase):
         self.testuser.id = self.testuser_id
 
         db.session.commit()
+
+    def tearDown(self):
+        resp = super().tearDown()
+        db.session.rollback()
+        return resp
 
     def test_register_form(self):
         """Register form loads upon request"""
@@ -194,3 +200,70 @@ class UserViewsTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn("EditedUser", html)
+
+
+    ################################################################################
+    # Test Membership routes
+
+    # Create clubs
+    def setup_club(self):
+        """Used to add clubs to db"""
+
+        c1 = Club(name="Club 1")
+
+        db.session.add(c1)
+        db.session.commit()
+
+    def test_join_club(self):
+        """User can join club"""
+
+        self.setup_club()
+        club = Club.query.first()
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            resp = c.post(f"/clubs/{club.id}/join")
+            self.assertEqual(resp.status_code, 302)
+
+            membership = Membership.query.one_or_none()
+
+            self.assertEqual(membership.user_id, self.testuser.id)
+
+            # REVIEW ERROR and "lazy loading"
+            # sqlalchemy.orm.exc.DetachedInstanceError: Parent instance <User at 0x10e487590> is not bound to a Session; lazy load operation of attribute 'memberships' cannot proceed (Background on this error at: https://sqlalche.me/e/14/bhk3)
+            # self.assertEqual(len(self.testuser.memberships), 1)
+    
+    # Create membership
+    def setup_membership(self):
+        """Used to add membership to db"""
+
+        c = Club(name="Test Club")
+        db.session.add(c)
+        db.session.commit()
+
+        club = Club.query.first()
+
+        m = Membership(club_id=club.id, user_id=self.testuser.id)
+        db.session.add(m)
+        db.session.commit()
+
+
+    def test_leave_club(self):
+        """Test that user can leave club"""
+
+        self.setup_membership()
+        club = Club.query.first()
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+            
+            resp = c.post(f"/clubs/{club.id}/leave")
+            self.assertEqual(resp.status_code, 302)
+
+            membership = Membership.query.one_or_none()
+
+            self.assertEqual(membership, None)
+
