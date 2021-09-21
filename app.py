@@ -80,9 +80,8 @@ def register():
         do_login(user)
 
         flash(f'Your account has been created. Welcome to BookTalk, {user.username}!', "text-success")
-        first = True
 
-        return redirect ("/", first=first)
+        return redirect ("/")
     
     else:
         return render_template('users/register.html', form=form)

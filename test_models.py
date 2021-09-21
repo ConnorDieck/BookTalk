@@ -11,12 +11,14 @@ from sqlalchemy.exc import IntegrityError
 
 from models import db, User, Book, Club, Meeting, Note, Read, Membership, Favorite
 
+# CODE REVIEW QUESTION: The below commented out code was borrowed from the Warbler assignment. However, it didn't work to set up a new database -- why is this?
+
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
 # before we import our app, since that will have already
 # connected to the database
 
-os.environ['DATABASE_URL'] = "postgresql:///booktalk-test"
+# os.environ['DATABASE_URL'] = "postgresql:///booktalk_test"
 
 
 # Now we can import app
@@ -24,7 +26,10 @@ os.environ['DATABASE_URL'] = "postgresql:///booktalk-test"
 from app import app
 import pdb
 
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///booktalk_test"
 app.config['SQLALCHEMY_ECHO'] = False
+app.config['TESTING'] = True
+app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
 # Create our tables (we do this here, so we only create the tables
 # once for all tests --- in each test, we'll delete the data

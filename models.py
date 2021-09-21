@@ -31,7 +31,7 @@ class User(db.Model):
     # Map to clubs through membership. You can see which clubs a user is a part of, and which users are in which clubs
     clubs = db.relationship('Club', secondary="memberships", backref="users")
     # Map directly to memberships (important to view join date)
-    memberships = db.relationship('Membership', backref="users", cascade="all, delete-orphan")
+    memberships = db.relationship('Membership', overlaps="clubs,users", cascade="all, delete-orphan")
 
     # # Map to books a user is exposed to through clubs
     # books = db.relationship('Book', secondary="reads", backref="users")
@@ -88,7 +88,7 @@ class Book(db.Model):
     # Map to clubs through reads
     clubs = db.relationship('Club', secondary="reads", backref="books")
     # Map directly to reads (important for finding whether this is the current book or not)
-    reads = db.relationship('Read', backref="books", cascade="all, delete-orphan")
+    reads = db.relationship('Read', overlaps="books,clubs", cascade="all, delete-orphan")
 
     # Map directly to notes so you can see the notes a on each book
     notes = db.relationship('Note', backref="books")
@@ -104,10 +104,10 @@ class Club(db.Model):
     name = db.Column(db.String(20), nullable=False, unique=True) 
 
     # Map directly to reads (important for finding current book)
-    reads = db.relationship('Read', backref="clubs", cascade="all, delete-orphan")
+    reads = db.relationship('Read', overlaps="books,clubs", cascade="all, delete-orphan")
 
     # Map directly to memberships (important for seeing join dates of users)
-    memberships = db.relationship('Membership', backref="clubs", cascade="all, delete-orphan")
+    memberships = db.relationship('Membership', overlaps="clubs,users", cascade="all, delete-orphan")
 
     meetings = db.relationship('Meeting', backref="clubs", cascade="all, delete-orphan")
 
@@ -159,6 +159,9 @@ class Read(db.Model):
     current = db.Column(db.Boolean)
     complete = db.Column(db.Boolean)
 
+    clubs = db.relationship("Club", overlaps="books,clubs")
+    books = db.relationship("Book", overlaps="books,clubs")
+
 
 
 class Membership(db.Model):
@@ -172,6 +175,10 @@ class Membership(db.Model):
     join_date = db.Column(db.Date)
     admin = db.Column(db.Boolean, default=False)
     moderator = db.Column(db.Boolean, default=False)
+
+    clubs = db.relationship("Club", overlaps="memberships,clubs,users")
+    users = db.relationship("User", overlaps="memberships,clubs,users",)
+
 
 
 
