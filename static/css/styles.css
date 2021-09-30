@@ -15,6 +15,14 @@ a {
 	color: #44f1b6;
 }
 
+.page-logo {
+	max-width: 300px;
+}
+
+.info-text {
+	color: white;
+}
+
 /* Navbar */
 
 .navbar {

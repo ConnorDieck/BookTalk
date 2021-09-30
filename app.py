@@ -79,7 +79,7 @@ def register():
 
         do_login(user)
 
-        flash(f'Your account has been created. Welcome to BookTalk, {user.username}!', "text-success")
+        flash(f'Your account has been created. Welcome to BookTalk, {user.username}!', "text-light")
 
         return redirect ("/")
     
@@ -102,6 +102,7 @@ def login():
         if user:
             # flash(f"Welcome Back, {user.first_name}!", "text-primary")
             do_login(user)
+            flash(f"Welcome to BookTalk, {user.username}!", "text-light")
             return redirect('/')
         else:
             form.username.errors = ['Invalid username/password.']
@@ -175,7 +176,7 @@ def edit_user(user_id):
                 form.username.errors.append('Sorry, this username is already taken. Please choose another')
                 return render_template('users/edit.html', form=form)
             
-            flash("Successfully updated user information.", "text-success")
+            flash("Successfully updated user information.", "text-light")
             return redirect (f"/users/{user.id}")
         else:
             flash("The password you entered was not correct.", "text-danger")
@@ -431,13 +432,13 @@ def add_moderator(club_id, user_id):
         if membership.moderator == False:
             membership.moderator = True
             db.session.commit()
-            flash(f"Promoted {user.username} to Moderator!", "text-success")
+            flash(f"Promoted {user.username} to Moderator!", "text-light")
             return redirect(f"/clubs/{club_id}")
         
         else:
             membership.moderator = False
             db.session.commit()
-            flash(f"Demoted { user.username } from Moderator.", "text-success")
+            flash(f"Demoted { user.username } from Moderator.", "text-light")
             return redirect(f"/clubs/{club_id}")
 
     else:
@@ -462,7 +463,7 @@ def make_admin(club_id, user_id):
         if membership.admin == False:
             membership.admin = True
             db.session.commit()
-            flash(f"Promoted {user.username} to Admin!", "text-success")
+            flash(f"Promoted {user.username} to Admin!", "text-light")
             return redirect(f"/clubs/{club_id}")
         
         else:
@@ -503,7 +504,7 @@ def toggle_current(club_id, book_id):
         read.current = False
         db.session.commit()
 
-        flash(f"Marked as not current", "text-success")
+        flash(f"Marked as not current", "text-light")
         return redirect(f"/clubs/{club_id}")
 
     else: 
@@ -514,7 +515,7 @@ def toggle_current(club_id, book_id):
         read.current = True
         db.session.commit()
         
-        flash(f"Marked as current", "text-success")
+        flash(f"Marked as current", "text-light")
         return redirect(f"/clubs/{club_id}")
 
 
@@ -540,7 +541,7 @@ def toggle_complete(club_id, book_id):
         read.complete = False
         db.session.commit()
 
-        flash(f"Marked as not completed", "text-success")
+        flash(f"Marked as not completed", "text-light")
         return redirect(f"/clubs/{club_id}")
     
     else:
@@ -548,7 +549,7 @@ def toggle_complete(club_id, book_id):
         read.current = False 
         db.session.commit()
 
-        flash(f"Marked as finished!", "text-success")
+        flash(f"Marked as finished!", "text-light")
         return redirect(f"/clubs/{club_id}")
 
 @app.route("/clubs/<int:club_id>/library")
@@ -693,7 +694,7 @@ def delete_meeting(m_id):
 
     db.session.delete(meeting)
     db.session.commit()
-    flash("Deleted meeting.", "text-success")
+    flash("Deleted meeting.", "text-light")
     return redirect(f"/clubs/{club.id}")
 
 ############################################################################
@@ -792,7 +793,7 @@ def delete_note(m_id, note_id):
         db.session.delete(note)
         db.session.commit()
 
-        flash("Note deleted!", "text-success")
+        flash("Note deleted!", "text-light")
         return redirect(f"/clubs/{club.id}/meetings/{m_id}")
 
 
@@ -876,7 +877,7 @@ def add_favorite(book_id):
         g.user.favorites.append(book)
         db.session.commit()
 
-        flash(f"Added {book.title} to your favorite books!", "text-success")
+        flash(f"Added {book.title} to your favorite books!", "text-light")
         return redirect("/books")
 
 @app.route("/books/<int:book_id>/remove_favorite", methods=["POST"])
@@ -898,7 +899,7 @@ def remove_favorite(book_id):
         g.user.favorites.remove(book)
         db.session.commit()
 
-        flash(f"Removed {book.title} from your favorite books.", "text-success")
+        flash(f"Removed {book.title} from your favorite books.", "text-light")
         return redirect("/")
 
 @app.route("/books/search", methods=["GET", "POST"])
@@ -976,7 +977,7 @@ def add_book_to_db():
         db.session.add(new_book)
         db.session.commit()
 
-        flash(f"Added {book['title']} to BookTalk!", "text-success")
+        flash(f"Added {book['title']} to BookTalk!", "text-light")
         return redirect("/books")
 
     else:
