@@ -7,8 +7,7 @@ body {
 .wrapper {
 	max-width: 960px; /* 20px smaller, to fit paddings on the sides */
 
-	padding-right: 10px;
-	padding-left: 10px;
+	padding: 10px;
 }
 
 a {
@@ -27,6 +26,7 @@ a {
 
 .navbar {
 	background-color: #0c4d53;
+	padding-left: 10px;
 }
 
 .nav-link {
@@ -34,8 +34,18 @@ a {
 	text-decoration: none;
 }
 
+.nav-link:hover {
+	color: #44f1b6;
+	text-decoration: none;
+}
+
 .navbar-brand {
 	width: 3rem;
+}
+
+.navbar-brand:hover {
+	width: 3rem;
+	transform: rotate(30);
 }
 
 /* Cards */
