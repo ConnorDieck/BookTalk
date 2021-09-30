@@ -1,3 +1,47 @@
+/* Main Paige */
+
+body {
+	background-color: #127780;
+}
+
+.wrapper {
+	max-width: 960px; /* 20px smaller, to fit paddings on the sides */
+
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+a {
+	color: #44f1b6;
+}
+
+/* Navbar */
+
+.navbar {
+	background-color: #0c4d53;
+}
+
+.nav-link {
+	color: white;
+	text-decoration: none;
+}
+
+.navbar-brand {
+	width: 3rem;
+}
+
+/* Cards */
+
+.card-img-top {
+	height: 15rem;
+	object-fit: contain;
+}
+
+/* Forms */
+
+.container .form-container {
+}
+
 #profile-pic {
 	width: 15rem;
 	object-fit: contain;
@@ -6,9 +50,4 @@
 
 #cover-photo {
 	width: 10rem;
-}
-
-.card-img-top {
-	height: 15rem;
-	object-fit: contain;
 }
