@@ -1,4 +1,4 @@
-/* Main Paige */
+/* Page Styles */
 
 body {
 	background-color: #127780;
@@ -19,6 +19,26 @@ a {
 }
 
 .info-text {
+	color: white;
+}
+
+h1 {
+	color: white;
+}
+h2 {
+	color: white;
+}
+h3 {
+	color: white;
+}
+h4 {
+	color: white;
+}
+h5 {
+	color: white;
+}
+
+p {
 	color: white;
 }
 
@@ -53,6 +73,11 @@ a {
 .card-img-top {
 	height: 15rem;
 	object-fit: contain;
+	/* background-color: #127780; */
+}
+
+.card {
+	background-color: #18a1ad;
 }
 
 /* Forms */
@@ -69,3 +94,28 @@ a {
 #cover-photo {
 	width: 10rem;
 }
+
+/* Buttons */
+
+.btn-success {
+	background-color: #0fc083;
+	color: white;
+	outline: none;
+}
+
+.btn-danger {
+	background-color: #a7a29a;
+	border: none;
+}
+.btn-danger:hover {
+	background-color: #a7a29ac9;
+	border: none;
+}
+/* .btn-danger:focus {
+	background-color: #a7a29ac9;
+	border-color: #69645cc9;
+} */
+
+/* .btn-outline-danger {
+	background-color: #f6f6f6;
+} */
