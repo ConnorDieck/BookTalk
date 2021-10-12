@@ -103,12 +103,24 @@ p {
 	outline: none;
 }
 
+.btn-primary {
+	background-color: #0fc083;
+	color: white;
+	border: none;
+}
+
+.btn-primary:hover {
+	background-color: #0e8d61;
+	color: white;
+	border: none;
+}
+
 .btn-danger {
 	background-color: #a7a29a;
 	border: none;
 }
 .btn-danger:hover {
-	background-color: #a7a29ac9;
+	background-color: #868177;
 	border: none;
 }
 /* .btn-danger:focus {
@@ -116,6 +128,8 @@ p {
 	border-color: #69645cc9;
 } */
 
-/* .btn-outline-danger {
+.btn-outline-danger {
 	background-color: #f6f6f6;
-} */
+	color: #7a7670c9;
+	border-color: #7a7670c9;
+}
