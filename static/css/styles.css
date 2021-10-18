@@ -63,10 +63,10 @@ p {
 	width: 3rem;
 }
 
-.navbar-brand:hover {
+/* .navbar-brand:hover {
 	width: 3rem;
 	transform: rotate(30);
-}
+} */
 
 /* Cards */
 
@@ -96,6 +96,8 @@ p {
 }
 
 /* Buttons */
+
+/* Update buttons to align with BookTalk color pallette */
 
 .btn-success {
 	background-color: #0fc083;
