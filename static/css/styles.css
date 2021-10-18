@@ -136,9 +136,11 @@ p {
 }
 
 /*** 
-Shelves
+Member Club Page
 
 */
+
+/* Shelves */
 
 .shelf-unfinished {
 	display: flex;
@@ -168,4 +170,15 @@ Shelves
 
 .card-title a {
 	color: white;
+}
+
+/* Footer */
+
+.footer {
+	display: flex;
+	justify-content: flex-start;
+}
+
+.footer .form-inline {
+	margin: 3px;
 }
