@@ -129,7 +129,7 @@
         {% if unfinished|length >= 1 %}
             <div class="row shelf-unfinished">
                 {% for book in unfinished %}
-                    <div class="col-sm-6">
+                    <div class="col">
                         <div class="card book-unfinished" style="width: 15rem">
                             <a href="/books/{{ book.id }}">
                                 <img class="card-img-top" src="{{ book.image }}" alt="{{ book.title }}">
