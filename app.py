@@ -8,7 +8,7 @@ from forms import LoginForm, RegisterForm, NewNoteForm, EditNoteForm, DeleteForm
 from transforms import transform_book_res
 
 import requests
-import pdb
+import os
 
 CURR_USER_KEY = "curr_user"
 
@@ -17,7 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///booktalk'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 app.config['SQLALCHEMY_ECHO'] = True
 
-app.config["SECRET_KEY"] = "abc123"
+app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY', '1c47bdd72341acb7c0c9b991ef6db584c53cee37e8fc19c38688b3f0fb8e29bc')
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
