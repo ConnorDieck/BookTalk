@@ -1,3 +1,4 @@
 notes
-venv
+venv/
 seed.py
+__pycache__/
