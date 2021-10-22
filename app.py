@@ -400,7 +400,8 @@ def leave_club(club_id):
     # If an admin tries to leave, ensure that there are other admins. Otherwise, prevent them from leaving until they promote another member to admin
     if membership.admin:
         memberships = Membership.query.filter(Membership.club_id == club_id).all()
-        admins = [member for member in memberships]
+        admins = [member for member in memberships if member.admin]
+        # pdb.set_trace()
         if len(admins) == 1:
             flash(f"Please promote another member to admin before leaving the club.", "text-danger")
             return redirect(f"/clubs/{club.id}")
