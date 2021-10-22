@@ -868,7 +868,6 @@ def book_details(book_id):
         flash("You must be signed in in order to view that page.", "text-danger")
         return redirect("/")
 
-    # TO DO: Build transform function in order to pull this information from the API
     book = Book.query.get_or_404(book_id)
 
     return render_template("books/details.html", book=book)
@@ -881,7 +880,6 @@ def add_favorite(book_id):
         flash("You must be signed in in order to view that page.", "text-danger")
         return redirect("/")
 
-    # TO DO: Build transform function in order to pull this information from the API
     book = Book.query.get_or_404(book_id)
 
     if book in g.user.favorites:
@@ -903,7 +901,6 @@ def remove_favorite(book_id):
         flash("You must be signed in in order to view that page.", "text-danger")
         return redirect("/")
 
-    # TO DO: Build transform function in order to pull this information from the API
     book = Book.query.get_or_404(book_id)
 
     if book not in g.user.favorites:
@@ -935,10 +932,6 @@ def show_book(book_id):
         flash("You must be signed in in order to view that page.", "text-danger")
         return redirect("/")
 
-    # bookID = request.json['bookID']
-    print("*********************************************")
-    # print(f"BookID: {bookID}")
-    print(f"BookID: {book_id}")
 
     # In order to get usable data, OpenLibrary requres two requests: the first to get the ISBN, which is then used for the second request which can be transformed into usable data
 
