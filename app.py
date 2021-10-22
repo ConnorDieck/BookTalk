@@ -68,6 +68,9 @@ def register():
         last_name = form.last_name.data
         bio = form.bio.data
 
+        if image == '':
+            image = '/static/images/placeholder.png'
+
         user = User.register(username=username, pwd=password, email=email, first=first_name, last=last_name, bio=bio, image=image)
 
         db.session.add(user)
