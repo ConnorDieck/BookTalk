@@ -1,5 +1,10 @@
 /* Page Styles */
 
+/* html {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 13px;
+} */
+
 body {
 	background-color: #127780;
 }
@@ -40,15 +45,23 @@ h1 {
 }
 h2 {
 	color: white;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 h3 {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 	color: white;
 }
 h4 {
 	color: white;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 h5 {
 	color: white;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 
 p {
@@ -93,6 +106,10 @@ li {
 	background-color: #18a1ad;
 }
 
+.card h5 {
+	margin: auto;
+}
+
 /* Forms */
 
 .container .form-container {
@@ -111,6 +128,12 @@ li {
 /* Buttons */
 
 /* Update buttons to align with BookTalk color pallette */
+
+.btn {
+	max-width: 9rem;
+	margin-left: 1rem;
+	margin-top: 1rem;
+}
 
 .btn-success {
 	background-color: #0fc083;
