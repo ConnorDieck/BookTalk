@@ -274,3 +274,17 @@ Meeting Details Page
 .notes {
 	margin: 2rem;
 }
+
+/*** 
+Book Search Page
+
+*/
+
+/* Notes */
+
+.book-tag {
+	margin: 2rem;
+	background-color: #18a1ad;
+	padding: 2rem;
+	border-radius: 2rem;
+}
