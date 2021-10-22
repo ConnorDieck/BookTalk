@@ -4,7 +4,9 @@
 
 {% block content %}
 
-<h1 class="header">BookTalkers:</h1>
+<div class="centered-content">
+    <h1 class="header">BookTalkers:</h1>
+</div>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -14,7 +16,8 @@
     {% endif %}
 {% endwith %}
 
-<div class="row">
+<div class="info-table">
+    <div class="row">
         {% for user in users %}
         <div class="card user-card" style="width: 18rem;">
             <div class="card-body">
@@ -24,7 +27,9 @@
             </div>
         </div>
         {% endfor %}
+    </div>
 </div>
+
 
 
 {% endblock %}

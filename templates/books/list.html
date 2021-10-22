@@ -14,68 +14,79 @@
 
 {% if all_books %}
 
-<h1>BookTalk Library</h1>
+<div class="centered-content">
+    <h1>BookTalk Library</h1>
+</div>
+
 
 <a href="/books/my_books" class="btn btn-success">See My Books</a>
 
-
-<div class="row">
+<div class="info-table">
+    <div class="row">
     
-    {% for book in books %}
-        <div class="card book-card" style="width: 18rem">
-            <div class="card-body">
-
-                <img src="{{ book.image }}" alt="{{ book.title }}" class="card-img-top">
-
-                <h5 class="card-title">{{ book.title }}</h5>
-                
-                <div class="container">
-                    <div class="row">
-                        <a href="/books/{{ book.id }}" class="btn btn-primary col">Details</a>
+        {% for book in books %}
+            <div class="card book-card" style="width: 18rem">
+                <div class="card-body">
+    
+                    <img src="{{ book.image }}" alt="{{ book.title }}" class="card-img-top">
+    
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <a href="/books/{{ book.id }}" class="btn btn-primary col">Details</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
- 
+        {% endfor %}
+     
+    </div>
 </div>
+
 
 {% else %}
 
-<h1>My Books</h1>
+<div class="centered-content">
+    <h1>My Books</h1>
+</div>
+
 
 <a href="/books" class="btn btn-success">See All Books</a>
 
-
-<div class="row">
+<div class="info-table">
+    <div class="row">
     
-    {% for book in books %}
-        <div class="card book-card" style="width: 18rem">
-            <div class="card-body">
-
-                <img src="{{ book.image }}" alt="{{ book.title }}" class="card-img-top">
-
-                <h5 class="card-title">{{ book.title }}</h5>
-                
-                <div class="container">
-                    <div class="row">
-                        <a href="/books/{{ book.id }}" class="btn btn-primary col">Details</a>
-                        {% if book not in g.user.favorites %}
-                            <form method="POST" action="/books/{{ book.id }}/favorite" class="form-inline col">
-                                <button class="btn btn-outline-success">Favorite</button>
-                            </form>
-                        {% else %}
-                            <form method="POST" action="/books/{{ book.id }}/remove_favorite" class="form-inline col">
-                                <button class="btn btn-outline-danger">Unfavorite</button>
-                            </form>
-                        {% endif %}
+        {% for book in books %}
+            <div class="card book-card" style="width: 18rem">
+                <div class="card-body">
+    
+                    <img src="{{ book.image }}" alt="{{ book.title }}" class="card-img-top">
+    
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <a href="/books/{{ book.id }}" class="btn btn-primary col">Details</a>
+                            {% if book not in g.user.favorites %}
+                                <form method="POST" action="/books/{{ book.id }}/favorite" class="form-inline col">
+                                    <button class="btn btn-outline-success">Favorite</button>
+                                </form>
+                            {% else %}
+                                <form method="POST" action="/books/{{ book.id }}/remove_favorite" class="form-inline col">
+                                    <button class="btn btn-outline-danger">Unfavorite</button>
+                                </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
- 
+        {% endfor %}
+     
+    </div>
 </div>
+
+
 
 {% endif %}
 

@@ -8,12 +8,27 @@ body {
 	padding: 10px;
 }
 
+.centered-content {
+	display: flex;
+	justify-content: center;
+}
+
 a {
 	color: #44f1b6;
 }
 
 .page-logo {
 	max-width: 300px;
+}
+
+.messages {
+	display: flex;
+	justify-content: center;
+}
+
+.info-table {
+	padding-right: 2rem;
+	padding-left: 2rem;
 }
 
 .info-text {
@@ -40,6 +55,10 @@ p {
 	color: white;
 }
 
+li {
+	color: white;
+}
+
 /* Navbar */
 
 .navbar {
@@ -60,11 +79,6 @@ p {
 .navbar-brand {
 	width: 3rem;
 }
-
-/* .navbar-brand:hover {
-	width: 3rem;
-	transform: rotate(30);
-} */
 
 /* Cards */
 
@@ -116,6 +130,12 @@ p {
 	border: none;
 }
 
+.btn-outline-success {
+	background-color: #0fc083;
+	color: white;
+	border: none;
+}
+
 .btn-danger {
 	background-color: #a7a29a;
 	border: none;
@@ -124,10 +144,6 @@ p {
 	background-color: #868177;
 	border: none;
 }
-/* .btn-danger:focus {
-	background-color: #a7a29ac9;
-	border-color: #69645cc9;
-} */
 
 .btn-outline-danger {
 	background-color: #f6f6f6;
@@ -136,9 +152,38 @@ p {
 }
 
 /*** 
+Home Page
+
+*/
+
+.home-logo {
+	display: flex;
+	justify-content: center;
+}
+
+/*** 
 Member Club Page
 
 */
+
+/* Users and Meetings */
+
+.club-info {
+	display: flex;
+	justify-content: space-around;
+}
+
+.meetings {
+	background-color: #18a1ad;
+	padding: 2rem;
+	border-radius: 2rem;
+}
+
+.users {
+	background-color: #18a1ad;
+	padding: 2rem;
+	border-radius: 2rem;
+}
 
 /* Shelves */
 
@@ -149,6 +194,8 @@ Member Club Page
 	overflow: auto;
 
 	background-color: #d9cab3;
+	padding: 2rem;
+	border-radius: 2rem;
 }
 
 .shelf-finished {
@@ -158,10 +205,21 @@ Member Club Page
 	overflow: auto;
 
 	background-color: #d9cab3;
+	padding: 2rem;
+	border-radius: 2rem;
 }
 
 .card.book-unfinished {
 	background-color: #d6c09e;
+}
+
+.card.book-unfinished .btn {
+	background-color: #a7a29a;
+	border: none;
+}
+.card.book-unfinished .btn:hover {
+	background-color: #868177;
+	border: none;
 }
 
 .card.book-finished {
@@ -181,4 +239,15 @@ Member Club Page
 
 .footer .form-inline {
 	margin: 3px;
+}
+
+/*** 
+Meeting Details Page
+
+*/
+
+/* Notes */
+
+.notes {
+	margin: 2rem;
 }

@@ -4,26 +4,35 @@
 
 {% block content %}
 
-<h1 class="header">{{ user.username }} Details</h1>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, msg in messages %}
-            <p class="{{ category }}">{{ msg }}</p>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-
-<div class="container profile-container">
-    <img src="{{ user.image }}" alt="{{ user.username }} profile image" id="profile-pic">
+<div class="centered-content">
+    <h1 class="header">{{ user.username }} Details</h1>
 </div>
 
-<ul>
-    <li>Username: {{ user.username }}</li>
-    <li>Name: {{ user.first_name }} {{ user.last_name }}</li>
-    <li>Email: {{ user.email }}</li>
-    <li>Bio: {{ user.bio }}</li>
-</ul>
+
+<div class="messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <p class="{{ category }}">{{ msg }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class="centered-content">
+        <img src="{{ user.image }}" alt="{{ user.username }} profile image" id="profile-pic">
+</div>
+
+<div class="centered-content">
+    <ul>
+        <li>Username: {{ user.username }}</li>
+        <li>Name: {{ user.first_name }} {{ user.last_name }}</li>
+        <li>Email: {{ user.email }}</li>
+        <li>Bio: {{ user.bio }}</li>
+    </ul>
+</div>
+
+
 
 <h5>{{ user.username }}'s Favorites:</h5>
 <div class="row favorites">

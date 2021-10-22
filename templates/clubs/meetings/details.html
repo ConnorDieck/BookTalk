@@ -4,15 +4,18 @@
 
 {% block content %}
 
+
 <h1>{{ meeting.date }} Meeting Details</h1>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, msg in messages %}
-            <p class="{{ category }}">{{ msg }}</p>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+<div class="messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <p class="{{ category }}">{{ msg }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
 
 <div class="meeting">
     
@@ -22,35 +25,39 @@
  
 </div>
 
-<div class="notes">
-    <h4>Notes for the meeting:</h4>
-
-    <div class="row">
-        {% for user in club.users %}
-            {% for note in user.notes %}
-                {% if note.meeting_id == meeting.id %}
-                    <div class="card note-card" style="width: 18rem">
-                        <div class="card-body">
-                            <h5 class="card-title">{{user.username}} Note</h5>
-                            <p class="card-text"> {{note.text}} </p>
-                            {% if g.user.id == user.id %}
-                                <a href="/meetings/{{ meeting.id }}/notes/{{note.id}}/edit" class="btn btn-info">
-                                    Edit
-                                </a>
-                                <form action="/meetings/{{ meeting.id }}/notes/{{ note.id }}/delete" method="post">
-                                    <button class="btn btn-outline-danger ml-2" id="finish-book">Delete</button>
-                                </form>
-                            {% endif %}
+<div class="centered-content">
+    <div class="notes">
+        <h4>Notes for the meeting:</h4>
+    
+        <div class="row">
+            {% for user in club.users %}
+                {% for note in user.notes %}
+                    {% if note.meeting_id == meeting.id %}
+                        <div class="card note-card" style="width: 18rem">
+                            <div class="card-body">
+                                <h5 class="card-title">{{user.username}} Note</h5>
+                                <p class="card-text"> {{note.text}} </p>
+                                {% if g.user.id == user.id %}
+                                    <a href="/meetings/{{ meeting.id }}/notes/{{note.id}}/edit" class="btn btn-info">
+                                        Edit
+                                    </a>
+                                    <form action="/meetings/{{ meeting.id }}/notes/{{ note.id }}/delete" method="post">
+                                        <button class="btn btn-outline-danger ml-2" id="finish-book">Delete</button>
+                                    </form>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
+        </div>
+    
+        <a href="/meetings/{{ meeting.id }}/notes/add" class="btn btn-success">Add Note</a>
+    
     </div>
-
-    <a href="/meetings/{{ meeting.id }}/notes/add" class="btn btn-success">Add Note</a>
-
 </div>
+
+
 
 <form action="/meetings/{{ meeting.id }}/delete" method="post">
     <button class="btn btn-outline-danger ml-2" id="finish-book">Delete Meeting</button>
