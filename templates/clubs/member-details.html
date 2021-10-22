@@ -33,7 +33,7 @@
                                 </a>
                             </h5>
                         </div>
-                    {% if g.user.id == admin.user_id or g.user in mods %}
+                    {% if g.user.id in admins or g.user.id in mods %}
                         <form action="/clubs/{{ club.id }}/{{ book.id }}/toggle_complete" method="post">
                             <button class="btn btn-success ml-2" id="finish-book">Mark as Finished</button>
                         </form>
@@ -59,7 +59,7 @@
    {% endfor %}
 </div>
 
-{% if g.user.id == admin.user_id or g.user in mods %}
+{% if g.user.id in admins or g.user.id in mods %}
     <a href="/clubs/{{ club.id }}/meetings/new" class="btn btn-success">New Meeting</a>
 {% endif %}
 
@@ -68,37 +68,39 @@
 
 
  <h3>BookTalkers in {{ club.name }}:</h3>
- <h5>Admin:</h5>
+ <h5>Admins:</h5>
  <ul class="admin-list">
     {% for user in club.users %}
-        {% if user.id == admin.user_id %}
+        {% if user.id in admins %}
             <li><a href="/users/{{ user.id }}">{{ user.username }}</a></li>
         {% endif %}
     {% endfor %}
  </ul>
  <h5>Moderators:</h5>
  <ul class="mods-list">
-    {% for user in mods %}
-        <li>
-            <a href="/users/{{ user.id }}">{{ user.username }}</a>
-            {% if g.user.id == admin.user_id %}
-                <form action="/clubs/{{ club.id }}/{{ user.id }}/toggle_moderator" method="post" class="form-inline col">
-                    <button class="btn btn-outline-danger">Demote</button>
-                </form>
-                <form action="/clubs/{{ club.id }}/{{ user.id }}/make_admin" method="post" class="form-inline col">
-                    <button class="btn btn-outline-success">Make Admin</button>
-                </form>
-            {% endif %}
-        </li>
+    {% for user in club.users %}
+        {% if user.id in mods and user.id not in admins %}
+            <li>
+                <a href="/users/{{ user.id }}">{{ user.username }}</a>
+                {% if g.user.id in admins %}
+                    <form action="/clubs/{{ club.id }}/{{ user.id }}/toggle_moderator" method="post" class="form-inline col">
+                        <button class="btn btn-outline-danger">Demote</button>
+                    </form>
+                    <form action="/clubs/{{ club.id }}/{{ user.id }}/make_admin" method="post" class="form-inline col">
+                        <button class="btn btn-outline-success">Make Admin</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endif %}
     {% endfor %}
  </ul>
  <h5>Other members:</h5>
  <ul class="members-list">
     {% for user in club.users %}
-        {% if user.id != admin.user_id and user not in mods %}
+        {% if user.id not in admins and user.id not in mods %}
             <li>
                 <a href="/users/{{ user.id }}">{{ user.username }}</a>
-                {% if g.user.id == admin.user_id %}
+                {% if g.user.id in admins %}
                     <form action="/clubs/{{ club.id }}/{{ user.id }}/toggle_moderator" method="post" class="form-inline col">
                         <button class="btn btn-outline-success">Make Moderator</button>
                     </form>
@@ -117,7 +119,7 @@
 
  <h3>Shelves:</h3>
 
- {% if g.user.id == admin.user_id or g.user in mods %}
+ {% if g.user.id in admins or g.user.id in mods %}
     <a href="/clubs/{{ club.id }}/library" class="btn btn-success">Add a new book!</a>
 {% endif %}
 
@@ -181,7 +183,7 @@
     <form method="POST" action="/clubs/{{ club.id }}/leave" class="form-inline">
         <button class="btn btn-danger ml-2">Leave Club</button>
     </form>
-    {% if g.user.id == admin.user_id %}
+    {% if g.user.id in admins %}
         <form method="POST" action="/clubs/{{ club.id }}/delete" class="form-inline">
             <button class="btn btn-outline-danger ml-2">Delete Club</button>
         </form>

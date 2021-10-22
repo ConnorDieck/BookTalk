@@ -198,6 +198,25 @@ def delete_user(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
+    # If an admin tries to delete their account, ensure that there are other admins in those clubs. Otherwise, prevent them from leaving until they promote another member to admin
+    memberships = Membership.query.filter(Membership.user_id == g.user.id).all()
+
+    for membership in memberships:
+        club_ids = []
+        if membership.admin:
+            club_ids.append(membership.club_id)
+            clubs = Club.query.filter(Club.id.in_(club_ids)).all()
+            for club in clubs:
+                admins = []
+                if len(club.memberships) > 1:
+                    for member in club.memberships:
+                        if member.admin:
+                            admins.append(member)
+            # pdb.set_trace()
+            if len(admins) == 1:
+                flash(f"You are the only administrator for one or more clubs with other members. Please either delete these club(s) or promote other members to admin before deleting your account.", "text-danger")
+                return redirect(f"/users/{g.user.id}")
+
     do_logout()
 
     db.session.delete(g.user)
@@ -277,14 +296,12 @@ def show_club_page(club_id):
         ########################
         # Designate admins and moderators
 
-        admin = Membership.query.filter(Membership.admin == True, Membership.club_id == club.id).first()
-        mod_memberships = Membership.query.filter(Membership.moderator == True, Membership.club_id == club.id).all()
-        mm_ids = []
-        for membership in mod_memberships:
-            mm_ids.append(membership.user_id)
-        mods = User.query.filter(User.id.in_(mm_ids)).all()
+        admin_members = Membership.query.filter(Membership.admin == True, Membership.club_id == club.id).all()
+        admins = [member.user_id for member in admin_members]
+        mod_members = Membership.query.filter(Membership.moderator == True, Membership.club_id == club.id).all()
+        mods = [member.user_id for member in mod_members]
 
-        return render_template("clubs/member-details.html", club=club, unfinished=unfinished, finished=finished, admin=admin, mods=mods)
+        return render_template("clubs/member-details.html", club=club, unfinished=unfinished, finished=finished, admins=admins, mods=mods)
 
     else:
         return render_template("clubs/general-details.html", club=club)
