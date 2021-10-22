@@ -1,31 +1,30 @@
-// https://openlibrary.org/search.json?q=harry%20potter&_facet=false&_spellcheck_count=0&limit=10&fields=key,cover_i,title,author_name,name&mode=everything
+const OPEN_LIB_URL = "https://openlibrary.org";
+const COVERS_URL = "https://covers.openlibrary.org/b/id/";
+// TO-DO: Find way to have this change depending on whether the app is running locally or deployed
+const SERVER_URL = "https://connor-booktalk.herokuapp.com/";
 
-const OPEN_LIB_URL = 'https://openlibrary.org';
-const COVERS_URL = 'https://covers.openlibrary.org/b/id/';
-const SERVER_URL = 'http://127.0.0.1:5000';
-
-$('#search-form').on('submit', async function(evt) {
+$("#search-form").on("submit", async function(evt) {
 	evt.preventDefault();
 
-	$('#results-list').empty();
+	$("#results-list").empty();
 
-	const subject = $('#subject').val();
-	const query = $('#search').val();
+	const subject = $("#subject").val();
+	const query = $("#search").val();
 	let parameters = {};
 
-	if (subject === 'title') {
+	if (subject === "title") {
 		parameters = {
 			q: query,
 			limit: 10,
-			fields: 'key,cover_i,title,author_name,name,seed',
-			mode: 'everything'
+			fields: "key,cover_i,title,author_name,name,seed",
+			mode: "everything"
 		};
 	} else {
 		parameters = {
 			author: query,
 			limit: 10,
-			fields: 'key,cover_i,title,author_name,name,seed',
-			mode: 'everything'
+			fields: "key,cover_i,title,author_name,name,seed",
+			mode: "everything"
 		};
 	}
 	const res = await axios.get(`${OPEN_LIB_URL}/search.json`, {
@@ -34,18 +33,18 @@ $('#search-form').on('submit', async function(evt) {
 
 	for (let bookData of res.data.docs) {
 		book = $(generateBook(bookData));
-		$('#results-list').append(book);
+		$("#results-list").append(book);
 	}
 });
 
 function generateBook(book) {
 	// Use the first seed for bookID, this way it will correspond to the bookdata and have details for the ISBN
-	const bookID = book['seed'][0].slice(7);
+	const bookID = book["seed"][0].slice(7);
 
 	return `<div class="book-tag" data-id=${bookID}> 
-	<img src="${COVERS_URL}${book['cover_i']}-M/jpg" alt="No image available" class="cover-image"> <li> Title: ${book[
-		'title'
-	]} </li> <li> Author: ${book['author_name'][0]} 
+	<img src="${COVERS_URL}${book["cover_i"]}-M/jpg" alt="No image available" class="cover-image"> <li> Title: ${book[
+		"title"
+	]} </li> <li> Author: ${book["author_name"][0]} 
 	<form method="POST" action="${SERVER_URL}/books/${bookID}/transform" class="form-inline col">
 	<button class="btn btn-outline-success">Details</button>
 	</form></div> `;
