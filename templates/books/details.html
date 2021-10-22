@@ -14,16 +14,19 @@
     {% endif %}
 {% endwith %}
 
-<div class="container book-tag">
-    <img src="{{ book.image }}" alt="{{ book.title }} cover photo" id="cover-photo">
+<div class="book-tag">
+    <div class="container">
+        <img src="{{ book.image }}" alt="{{ book.title }} cover photo" id="cover-photo">
+    </div>
+    
+    <ul>
+        <li>Title: {{ book.title }}</li>
+        <li>Author: {{ book.author }}</li>
+        <li>Publishing Date: {{ book.publish_date }}</li>
+        <li>Number of pages: {{ book.num_pages }}</li>
+    </ul>
 </div>
 
-<ul>
-    <li>Title: {{ book.title }}</li>
-    <li>Author: {{ book.author }}</li>
-    <li>Publishing Date: {{ book.publish_date }}</li>
-    <li>Number of pages: {{ book.num_pages }}</li>
-</ul>
 
 <div class="footer">
     {% if book not in g.user.favorites %}
