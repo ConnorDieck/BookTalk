@@ -33,7 +33,7 @@ If a user no longer wishes to be a member of a club, they may cancel their membe
 * **Notes**
 	* Members of a club can add notes to call out items they would like to discuss in an upcoming meeting. Notes are associated with the given meeting and creating user. 
 
-###Technology Stack
+### Technology Stack
 
 The backend for BookTalk was written in Python using a Flask framework. BookTalk's database was created using SQLAlchemy. HTML pages use Jinja templating and are styled using BootStrap and in-house CSS. Forms were created using WTForms. The search page used to add books is written in JavaScript to enable results to be shown without changing pages, and connections to the API there are made using the Axios library. 
 
