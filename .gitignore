@@ -1,4 +1,4 @@
 project-notes
 venv/
 seed.py
-__pycache__/
+__pycache__
