@@ -1,5 +1,5 @@
 # BookTalk
-## First Capstone for Springboard: Software Engineering Track
+## A social app for people who love books
 
 ### App Description
 
