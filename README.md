@@ -8,7 +8,7 @@ BookTalk enables users to join and create book clubs in order to organize meetin
 ### Associated Links:
 
 * Link to site: [https://connor-booktalk.herokuapp.com/](https://connor-booktalk.herokuapp.com/)
-* API Link: [https://www.goodreads.com/api](https://connor-booktalk.herokuapp.com/)
+* API Link: [https://openlibrary.org](https://openlibrary.org/)
 
 ### Standard User Flow
 
